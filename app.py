@@ -26,8 +26,7 @@ import os
 from helpers import generate_student_id, generate_receipt_no, promote_student, date_transform, inside, encrypt_text, decrypt_text
 from forms import (ClientSignUpForm, ClientLogInForm, ToDoForm, StudentPaymentsForm, ExpensesForm, PTAExpensesForm, ETLExpensesForm, ReportsForm, ChargeForm, SearchForm, StudentLedgerForm)
 
-db_url =  "postgres://ncvzgxfhqksvxj:031bfc49b611636694193e8fb7ab6fb92ef44edf4490ef604bec977a56075bff@ec2-54-158-26-89.compute-1.amazonaws.com:5432/ddo3qjkq45niev"
-
+db_url =  "postgres://ezffanfmtiwixw:de187f5a9db402e1a04dd724c333c47b3f8de2252c475f4e2a505a6d40591478@ec2-3-217-219-146.compute-1.amazonaws.com:5432/ddsrcsftn519t3"
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = db_url
 app.config['SQLALCHEMY_BINDS'] = {"kpasec": "sqlite:///kpasec.db", "kpasecarchives":"sqlite:///kpasecarchives.db"}
