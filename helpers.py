@@ -5,7 +5,7 @@ from cryptography.fernet import Fernet
 import os
 
 
-key = os.environ.get("KPASEC_KEY").encode()
+key = "zhvW_d3WFN9gaE68IdJurgEEIRielmzr9VgZgiPFzPM="#os.environ.get("KPASEC_KEY").encode()
 
 def encrypt_text(plain_text, key=key):
     f = Fernet(key)
