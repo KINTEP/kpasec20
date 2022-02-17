@@ -1027,7 +1027,7 @@ class Charges(db.Model):
 
 
 
-current_sem = Charges.query.all()[-1].semester
+current_sem = 'SEM1'#Charges.query.all()[-1].semester
 
 
 
