@@ -275,7 +275,7 @@ def clerk_dashboard():
 		expenses = Expenses.query.filter(func.date(Expenses.date) == date).all()
 		expense = sum([exp.totalcost for exp in Expenses.query.all()])
 		total = etl + pta
-		return render_template('clerk_dashboard.html', form1=form1, form2=form2, expense=expense, 
+		return render_template('clerk_dashboard11.html', form1=form1, form2=form2, expense=expense, 
 			etl=etl, pta=pta, total=total, student=student)
 	else:
 		abort(404)
@@ -561,7 +561,7 @@ def accountant_dashboard():
 			if todo.data.get('task') == "Begin Semester":
 				return redirect(url_for('begin_sem'))
 
-		return render_template("accountant_dashboard1.html", todo=todo, form1=form1, studs=studs, income=pta+etl, pta=pta, etl=etl,
+		return render_template("accountant_dashboard11.html", todo=todo, form1=form1, studs=studs, income=pta+etl, pta=pta, etl=etl,
 			expense=expense, form2=form2)
 	else:
 		abort(404)
