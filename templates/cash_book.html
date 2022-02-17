@@ -123,7 +123,8 @@ body{
 	 <div class="narv">
 
 		<div class="income">
-		<h3 style="text-align: center;padding-top: 5vh;padding-bottom: 2vh;">Cash Book</h3>
+		<h3 style="text-align: center;padding-top: 5vh;padding-bottom: 2vh;">Kpasec {{category}} <br> Cash Book  <br> Dated <abbr style="font-family: cursive; color: red;font-size:18px">{{start}}</abbr>   to  <abbr style="font-family: cursive; color: red;font-size:18px">{{end}}</abbr> </h3>
+		
 	    </div>
 		<ul>
 			<input type="button" name="excel" value="EXCEL" onclick="exporttoexcell()">
@@ -148,7 +149,7 @@ body{
 					<td></td>
 					<td></td>
 					<td></td>
-					<td>{{balance | currencyFormat}}</td>
+					<td>{{bf | currencyFormat}}</td>
 				</tr>
 				{% for cash in cash_book %}
 				{% if cash.category == "revenue" %}
@@ -157,9 +158,9 @@ body{
 					<td>{{cash.date.date()}}</td>
 					<td>{{cash.details}}</td>
 					<td>cash</td>
-					<td>{{cash.amount}}</td>
+					<td>{{cash.amount | currencyFormat }}</td>
 					<td></td>
-					<td>{{cash.balance}}</td>
+					<td>{{balance[loop.index] | currencyFormat}}</td>
 				</tr>
 				{% else %}
 				<tr>
@@ -168,8 +169,8 @@ body{
 					<td>{{cash.details}}</td>
 					<td>cash</td>
 					<td></td>
-					<td>{{cash.amount}}</td>
-					<td>{{cash.balance}}</td>
+					<td>{{cash.amount | currencyFormat}}</td>
+					<td>{{balance[loop.index] | currencyFormat}}</td>
 				</tr>
 				{% endif %}
 				{% endfor %}

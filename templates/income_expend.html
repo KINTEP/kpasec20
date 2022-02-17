@@ -9,17 +9,28 @@
 	<script src="{{url_for('static', filename = 'js/table2excel.js')}}"></script>
 </head>
 <style type="text/css">
-	body{
-     background: #AED6F1;
-     overflow-y: scroll;
-	}
+body{
+
+	height: 100%;
+	background-image: linear-gradient(rgba(0,0,0,0.50),rgba(0,0,0,0.50)),url("{{url_for('static', filename='images/reg2.jpg')}}");
+	background-size: cover;
+	background-repeat: no-repeat;
+	overflow-y: scroll;
+	background-attachment: fixed;
+}
+
+.kpa{
+	margin-left: 2%;
+}
+
 	.narv{
 		background: white;
 		width: 80vw;
-		height: 100vh;
+		height: 100%;
 		border-radius: 5px;
 		margin-top: 5vh;
 		margin-left: 10vw;
+		opacity: 0.8;
 	}
 	.narv ul {
 		margin-left: 2.5vw;
@@ -29,22 +40,28 @@
 	}
 
 	table tr th{
-		border: 1px solid black;
+		border: 0.3px solid black;
 	}
 	table tr td{
-		border: 1px solid black;
+		border: 0.3px solid black;
 	}
 	table{
 		width: 70vw;
 		margin-left: 5vw;
-		margin-top: -1vw;
+		margin-top: -2.5vh;
 	}
 	@media(max-width: 900px){
 
-     body{
-     background: #AED6F1;
-     overflow-y: scroll;
-	}
+   body{
+
+	height: 100%;
+	background-image: linear-gradient(rgba(0,0,0,0.50),rgba(0,0,0,0.50)),url("{{url_for('static', filename='images/reg2.jpg')}}");
+	background-size: cover;
+	background-repeat: no-repeat;
+	overflow-y: scroll;
+	background-attachment: fixed;
+}
+
      .narv{
 		background: white;
 		width: 92%;
@@ -56,7 +73,7 @@
 	table{
 		width: 92%;
 		margin-left: 2vw;
-		margin-top: -1vw;
+		margin-top: -3vw;
 	}
 	.narv ul {
 		margin-left: 0vw;
@@ -68,7 +85,7 @@
 
 	}
 	@media print{
-		input, header {
+		input {
 			display: none;
 		}
 	}
@@ -77,7 +94,7 @@
 
 	<header>
 		<nav class="navbar navbar-expand-lg navbar-light bg-light">
-			    <a class="navbar-brand" href="#">KPASEC P.T.A</a>
+			    <a class="navbar-brand kpa" href="#">KPASEC P.T.A</a>
 			    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
 			      <span class="navbar-toggler-icon"></span>
 			    </button>
@@ -86,14 +103,9 @@
 				<div class="collapse navbar-collapse" id="navbarText">
 			      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 			        <li class="nav-item">
-			          <a class="nav-link active " aria-current="page" href="{{url_for('accountant_dashboard')}}" id="dash">Dashboard</a>
+			          <a class="nav-link active " aria-current="page" href="{{url_for('accountant_dashboard')}}" id="dash">Home</a>
 			        </li>
-			        <li class="nav-item d-flex">
-			          <a class="nav-link" href="#" id="lis">Classes</a>
-			        </li>
-			        <li class="nav-item">
-			          <a class="nav-link " href="#" id="new-class">New-Class</a>
-			        </li>
+			        
 			      </ul>
 
 			      <span class="navbar-text" >
@@ -109,7 +121,7 @@
 	 <div class="narv">
 
 		<div class="income">
-		<h3 style="text-align: center;padding-top: 5vh;padding-bottom: 2vh;">{{category}} Income & Expenditure Statement for {{start}} to {{end}}</h3>
+		<h3 style="text-align: center;padding-top: 5vh;padding-bottom: 2vh;">Kpasec {{category}} <br> Income & Expenditure <br> Dated <abbr style="font-family: cursive; color: red;font-size:18px">{{start}}</abbr>   to  <abbr style="font-family: cursive; color: red;font-size:18px">{{end}}</abbr> </h3>
 	    </div>
 		<ul>
 			<input type="button" name="excel" value="EXCEL" onclick="exporttoexcell()">
@@ -121,42 +133,30 @@
 					<th>#.</th>
 					<th>Date</th>
 					<th>Details</th>
+					<th>Analysis</th>
 					<th>Debit</th>
 					<th>Credit</th>
 					<th>Balance</th>
 
-				</tr>
-				<tr class="fw-bold">
-					<td></td>
-					<td >INCOMES</td>
-					<td></td>
-					<td>GHC</td>
-					<td>GHC</td>
-					<td>GHC</td>
 				</tr>
 				{% set len1 = incomes | length %}
 				{% for income in incomes %}
 				<tr>
 					<td>{{loop.index}}</td>
 					<td>{{income.date.date()}}</td>
-					<td>{{category}} Income</td>
+					<td>Income</td>
+					<td>{{category}}</td>
 					<td></td>
 					<td>{{income.amount | currencyFormat}}</td>
 					<td>{{cums[loop.index - 1] | currencyFormat}}</td>
 				</tr>
 				{% endfor %}
-				<tr>
-					<td></td>
-					<td class="fw-bold">EXPENSES</td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-				</tr>
+
 				{% for expense in expenses %}
 				<tr>
-					<td>{{loop.index}}</td>
+					<td>{{len1 + loop.index}}</td>
 					<td>{{expense.date.date()}}</td>
+					<td>Expense</td>
 					<td>{{expense.item}}</td>
 					<td>{{expense.totalcost | currencyFormat }}</td>
 					<td></td>
@@ -166,16 +166,17 @@
 
 				<tr>
 					<td style="border: 0px solid transparent;"></td>
-					<td class="fw-bold">Surplus (Deficit)</td>
-					<td></td>
+					<td style="border: 0px solid transparent;"></td>
+					<td style="border: 0px solid transparent;"></td>
+					<th>Total</th>
 					<td>{{sum2 | currencyFormat}}</td>
 					<td>{{sum1 | currencyFormat}}</td>
-					<td style="font-style: oblique; padding-left: 0%;" class="bg-warning fw-bold">{{cums[-1] | currencyFormat }}</td>
+					<td style="font-style: oblique; padding-left: 0%;">{{cums[-1] | currencyFormat }}</td>
 					
 				</tr>
 
-			</table><br>
-		</div><br>
+			</table><br><br>
+		</div><br><br>
 		
 
 

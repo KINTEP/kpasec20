@@ -40,7 +40,7 @@ class ClientLogInForm(FlaskForm):
 
 
 class ToDoForm(FlaskForm):
-    task = SelectField("Choose A Task", choices = ['Make ETL Expenses','Make PTA Expenses', 'Begin Semester'],  validators=[DataRequired()])
+    task = SelectField("Choose A Task", choices = ['Make E.T.L Expenses','Make P.T.A Expenses', 'Begin Semester'],  validators=[DataRequired()])
     submit_do = SubmitField("Proceed")
 
 
@@ -157,12 +157,6 @@ class ReportsForm(FlaskForm):
     def validate_end(self, end):
     	if end.data <= self.start.data:
     		raise ValidationError("Date must be latter than start date")
-
-    	today = datetime.utcnow()
-    	today = dt.date(year=today.year, month=today.month, day=today.day)
-    	end1 = dt.date(year=end.data.year, month=end.data.month, day=end.data.day)
-    	if end1 > today:
-    		raise ValidationError(f"Date is greater than {today}")
 
     def validate_start(self, start):
     	today = datetime.utcnow()

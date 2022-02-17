@@ -1,0 +1,2 @@
+
+db_url =  "postgres://ezffanfmtiwixw:de187f5a9db402e1a04dd724c333c47b3f8de2252c475f4e2a505a6d40591478@ec2-3-217-219-146.compute-1.amazonaws.com:5432/ddsrcsftn519t3"

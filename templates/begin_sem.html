@@ -26,6 +26,17 @@ body{
 	
 }
 
+
+span {
+	margin-right:0% ;
+	background: transparent;
+	width: 27%;
+}
+span a{
+	margin-right: 4%;
+	padding-left: 5%;
+}
+
 .kpa{
 	margin-left: 2%;
 }
@@ -53,6 +64,7 @@ body{
 		opacity: 0.7;
 		display: block;
 		margin-left: 30vw;
+		margin-bottom: 2%;
 }
 
 .tttable .sub{
@@ -147,7 +159,7 @@ body{
 			      </ul>
 
 			      <span class="navbar-text" >
-			      	<a href="{{url_for('account')}}" class="nn">{{current_user.username}}</a>
+			      	<a style="text-decoration:none;" href="{{url_for('account')}}" class="nn">{{current_user.username}}</a>
 			      	<a href="{{url_for('logout')}}">Logout</a>
 			      </span>
 			 
@@ -157,7 +169,7 @@ body{
 	</header>
 
 	   	<div class="tttable" id="cont2">
-   		<h3 class="topp" style="padding-top:4vh; text-align: center; ">Begin Semister </h3>
+   		<h3 class="topp" style="padding-top:4vh; text-align: center; font-family: sans-serif; ">Begin Semister </h3>
    		<form method="POST" action="" id="student_data" class="fff" enctype="multipart/form-data">
 			{{form.hidden_tag()}}
 			{{form.csrf_token}}
@@ -165,12 +177,10 @@ body{
 			{{form.semester()}}
 			<br>
 			<label style="color:green">Start Date</label>
-			{{render_field(form.begin_date)}}
 			{{form.begin_date}}
 			<br>
 			
 			<label style="color:green">End Date</label>
-			{{render_field(form.end_date)}}
 			{{form.end_date}}<br>
 
 			<label style="text-align:flex-start;color: #2471A3;">P.T.A Charge</label><br>

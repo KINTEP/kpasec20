@@ -25,7 +25,11 @@ import pandas as pd
 import os
 from helpers import generate_student_id, generate_receipt_no, promote_student, date_transform, inside, encrypt_text, decrypt_text
 from forms import (ClientSignUpForm, ClientLogInForm, ToDoForm, StudentPaymentsForm, ExpensesForm, PTAExpensesForm, ETLExpensesForm, ReportsForm, ChargeForm, SearchForm, StudentLedgerForm)
+from logging import FileHandler, WARNING
 
+
+
+#db_url =  "postgres://ncvzgxfhqksvxj:031bfc49b611636694193e8fb7ab6fb92ef44edf4490ef604bec977a56075bff@ec2-54-158-26-89.compute-1.amazonaws.com:5432/ddo3qjkq45niev"
 db_url =  "postgres://ezffanfmtiwixw:de187f5a9db402e1a04dd724c333c47b3f8de2252c475f4e2a505a6d40591478@ec2-3-217-219-146.compute-1.amazonaws.com:5432/ddsrcsftn519t3"
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = db_url
@@ -33,10 +37,15 @@ app.config['SQLALCHEMY_BINDS'] = {"kpasec": "sqlite:///kpasec.db", "kpasecarchiv
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-app.config['SECRET_KEY'] = "Kpasec162816ysghag562156157652ytasffaffyasfy562"#os.environ.get('KPASEC_APP')
+app.config['SECRET_KEY'] = os.environ.get('KPASEC_APP')
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
+
+filehandler = FileHandler('errorlog.txt')
+filehandler.setLevel(WARNING)
+
+app.logger.addHandler(filehandler)
 #migrate = Migrate(app, db)
 
 #key = Fernet.generate_key()
@@ -64,7 +73,7 @@ def load_user(user_id):
 
 @app.route("/")
 def home():
-    return render_template("homepage1.html")
+    return 1/0#render_template("homepage1.html")
 
 
 @app.route("/register_user", methods = ['GET', 'POST'])
@@ -489,14 +498,14 @@ def accountant_dashboard():
 		expense = sum([exp1.totalcost for exp1 in Expenses.query.all()])
 		todo = ToDoForm()
 		if todo.data['submit_do'] and todo.validate_on_submit():
-			if todo.data.get('task') == "Make ETL Expenses":
+			if todo.data.get('task') == "Make E.T.L Expenses":
 				return redirect(url_for('etl_expenses'))
-			if todo.data.get('task') == "Make PTA Expenses":
+			if todo.data.get('task') == "Make P.T.A Expenses":
 				return redirect(url_for('pta_expenses'))
 			if todo.data.get('task') == "Begin Semester":
 				return redirect(url_for('begin_sem'))
 
-		return render_template("accountant_dashboard.html", todo=todo, form1=form1, studs=studs, income=pta+etl, pta=pta, etl=etl,
+		return render_template("accountant_dashboard1.html", todo=todo, form1=form1, studs=studs, income=pta+etl, pta=pta, etl=etl,
 			expense=expense, form2=form2)
 	else:
 		abort(404)
@@ -590,9 +599,14 @@ def pay_search_result(name, dob, phone, idx, class1):
 				pmt_data = StudentPayments(etl_amount=etl, pta_amount=pta, semester=semester, mode_of_payment=mode, student_id=idx, amount=amount, tx_id=tx_id)
 				pta_data = PTAIncome(amount=pta, tx_id=tx_id, semester=semester, mode_of_payment=mode, student_id=idx)
 				etl_data = ETLIncome(amount=etl, tx_id=tx_id, semester=semester, mode_of_payment=mode, student_id=idx)
-				id1 = StudentPayments.query.all()[-1].id
-				id2 = PTAIncome.query.all()[-1].id
-				id3 = ETLIncome.query.all()[-1].id
+				if len(StudentPayments.query.all()) > 0:
+					id1 = StudentPayments.query.all()[-1].id
+					id2 = PTAIncome.query.all()[-1].id
+					id3 = ETLIncome.query.all()[-1].id
+				else:
+					id1 = 0
+					id2 = 0
+					id3 = 0
 				ptacash = PTACashBook(amount=pta, category="revenue", semester=semester, balance = balance2, income_id=id2+1)
 				etlcash = ETLCashBook(amount=etl, category="revenue", semester=semester, balance = balance1, income_id=id3+1)
 				cash = CashBook(etl=etl, pta=pta, category='revenue', semester=semester, balance=balance, income_id=id1+1, amount=amount)	
@@ -767,7 +781,7 @@ class UserSignUpForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), Email()])
     password = PasswordField("Password", validators=[DataRequired(), Length(min=8, max=20)])
     confirm_password = PasswordField("Comfirm Password", validators = [DataRequired(), EqualTo('password')])
-    function = SelectField("Role", choices = ['','account', 'clerk'], validators=[DataRequired()])
+    function = SelectField("Role", choices = ['','Accountant', 'Clerk'], validators=[DataRequired()])
     submit = SubmitField("Register")
 
     def validate_email(self, email):
@@ -782,7 +796,7 @@ class UserLogInForm(FlaskForm):
     remember = BooleanField("Remember me")
     submit = SubmitField("Login")
 
-    def validate_password2022(self, password):
+    def validate_password(self, password):
     	characters = ['=', '.','<','>', '-', '_', '/', '?', '!']
     	for char in characters:
     		if char in password.data:
@@ -1013,7 +1027,7 @@ class Charges(db.Model):
 
 
 
-#current_sem = Charges.query.all()[-1].semester
+current_sem = Charges.query.all()[-1].semester
 
 
 
@@ -1146,7 +1160,7 @@ admin.add_view(MyModelView(CashBook, db.session))
 admin.add_view(MyModelView(PTAIncome, db.session))
 
 if __name__ == '__main__':
-	app.run(debug = False)
+	app.run()
 
 
 

@@ -7,10 +7,12 @@
 <style type="text/css">
 body{
 
-	height: 100vh;
-	background-image: linear-gradient(rgba(0,0,0,0.50),rgba(0,0,0,0.50)),url("{{url_for('static', filename='images/hm4.jpg')}}");
+	height: 100%;
+	background-image: linear-gradient(rgba(0,0,0,0.50),rgba(0,0,0,0.50)),url("{{url_for('static', filename='images/kpa2.jpg')}}");
 	background-size: cover;
 	background-repeat: no-repeat;
+	overflow-y: scroll;
+	background-attachment: fixed;
 }
 
 *{
@@ -20,9 +22,10 @@ body{
 }
 
 .som{
-	padding-top: 20%;
+	margin-top: 20em;
 	padding-left: 0%;
 	font-family: monospace;
+	margin-bottom: 4em;
 }
 
  .som h1{
@@ -46,7 +49,7 @@ body{
   100%{margin-right: 100px;}
  }
 
-
+/*
 
 	.get{
 		margin-top: 2%;
@@ -55,27 +58,35 @@ body{
 		width: 13%;
 		padding-left: 0%;
 		padding-top: 1%;
-		height: 6vh;
+		height: 2.3em;
 		border-radius: 25px;
 		opacity: 0.8;
 
 
 		
 	}
+
+   */
+
+
 	.get a{
 		text-decoration: none;
 		color: white;
+		background: #FF6700;
+		padding: 12px 20px;
+		border-radius: 25px;
 	}
 
 @media(max-width: 900px){
 
+body{
 
-  body{
-
-	height: 100vh;
-	background-image: linear-gradient(rgba(0,0,0,0.50),rgba(0,0,0,0.50)),url("{{url_for('static', filename='images/hm4.jpg')}}");
+	height: 100%;
+	background-image: linear-gradient(rgba(0,0,0,0.50),rgba(0,0,0,0.50)),url("{{url_for('static', filename='images/kpa2.jpg')}}");
 	background-size: cover;
 	background-repeat: no-repeat;
+	overflow-y: scroll;
+	background-attachment: fixed;
 }
 
 *{
@@ -84,11 +95,6 @@ body{
 	
 }
 
-.som{
-	padding-top: 40%;
-	padding-left: 0%;
-	font-family: monospace;
-}
 
  .som h1{
  	text-align: center;
@@ -112,39 +118,36 @@ body{
  }
 
 
-
-	.get{
-		margin-top: 7%;
-		margin-left: 0%;
-		background: #FF6700;
-		width: 30%;
-		padding-left: 0%;
-		padding-top: 2.8%;
-		height: 6vh;
-		border-radius: 25px;
-		opacity: 0.8;
-
-
-		
-	}
 	.get a{
 		text-decoration: none;
 		color: white;
+		background: #FF6700;
+		padding: 12px 20px;
+		border-radius: 25px;
 	}
 
 }	
+
+@media(max-width: 800px){
+	.som{
+		margin-top: 20em;
+	}
+
+}
 </style>
 <body>
 	
-		
-	<div class="som">
+	<center>
+		<div class="som">
 	<h1>KPASEC P.T.A & E.T.L ACCOUNTS</h1>	
 	</div>
-    <center>
+    
     	<div class="get">
 		  <a href="{{url_for('login')}}">GET STARTED</a>
-	    </div>
-    </center>
+	    </div><br><br>
+    
+	</center>	
+	
 	
 	
 

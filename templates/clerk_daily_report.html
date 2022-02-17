@@ -27,6 +27,16 @@ body{
 	
 }
 
+span {
+	margin-right:0% ;
+	background: transparent;
+	width: 27%;
+}
+span a{
+	margin-right: 4%;
+	padding-left: 5%;
+}
+
 .kpa{
 	margin-left: 2%;
 }
@@ -44,6 +54,26 @@ body{
        margin-top: 3%;
 
 	}
+
+.prn{
+	margin-left: 20%;
+	background: black;
+	width: 60%;
+	height: 3em;
+}
+.prn a{
+	text-decoration: none;
+	padding-left: 2%;
+	color: white;
+}
+.prn input{
+	width: 20%;
+	margin-top: 1.5vh;
+}
+.topp{
+	font-size: 18px;
+	font-family: monospace;
+}	
 	
 
 table{
@@ -103,11 +133,11 @@ table tr td{
 	color: green;
 }	
 .ttable{
-	width: 60vw;
+	width: 60%;
 	height: 100%;
 	background: white;
-	border-radius: 5px;
-	margin-top: -0.8%;
+	border-radius: 0px;
+	margin-top: 0%;
 	opacity: 0.8;
 
 }
@@ -168,15 +198,32 @@ table tr td{
 	border-radius: 5px;
 	font-size: 15px;
 }
-@
+
 
 @media(max-width: 900px){
 .ttable{
 	width: 90%;
 	height: 100%;
 	background: white;
-	border-radius: 5px;
+	opacity: 0.7;
 }
+
+.prn{
+	margin-left: 5%;
+	background: black;
+	width: 90%;
+	height: 3em;
+}
+.prn a{
+	text-decoration: none;
+	padding-left: 2%;
+	color: white;
+}
+.prn input{
+	width: 20%;
+	margin-top: 1.5vh;
+}
+
 
 table{
 	width: 80%;
@@ -186,7 +233,7 @@ table{
 }
 
 @media print{
-input, ul, header {
+input {
 	display: none;
 }
 
@@ -213,7 +260,7 @@ input, ul, header {
 			      </ul>
 
 			      <span class="navbar-text" >
-			      	<a href="{{url_for('account')}}" class="nn">{{current_user.username}}</a>
+			      	<a style="text-decoration:none" href="{{url_for('account')}}" class="nn">{{current_user.username}}</a>
 			      	<a href="{{url_for('logout')}}">Logout</a>
 			      </span>
 			 
@@ -224,20 +271,26 @@ input, ul, header {
 
  
      <div class="nul"></div>
-
+  <!--
     <ul class="pri">
 	Generate Reports:<input type="button" name="print" value="PRINT" onclick="print_content()" class="pri2" >
     </ul>
+  -->
+    <div class="prn">
+    	<a href="#">Generate Daily Report</a>
+    	<span><input type="button" name="" value="Print" onclick="print_content()"></span>
+    </div>
+    
    <center>
-    	
+   	
    	<div class="ttable" id="cont1">
    		<h4 class="topp" style="padding-top:4vh">Daily ETL Income for {{date}}</h4>
    		<table >
    			<tr>
    				<th class="non">No.</th>
    				<th class="foom">Class</th>
-   				<th class="fom">Name of Students</th>
-   				<th>Receipt Number</th>
+   				<th class="fom">Students Name</th>
+   				<th>Receipt #</th>
    				<th class="fomm">Date</th>
    				<th class="foomm">Amount</th>
 
@@ -283,8 +336,8 @@ input, ul, header {
    			<tr>
    				<th class="non">No.</th>
    				<th class="foom">Class</th>
-   				<th class="fom">Name of Students</th>
-   				<th>Receipt Number</th>
+   				<th class="fom">Students Name</th>
+   				<th>Receipt #</th>
    				<th class="fomm">Date</th>
    				<th class="foomm">Amount</th>
    			</tr>

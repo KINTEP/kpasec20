@@ -9,18 +9,30 @@
 	<script src="{{url_for('static', filename = 'js/table2excel.js')}}"></script>
 </head>
 <style type="text/css">
-	body{
-     background: #AED6F1;
-     overflow-y: scroll;
-	}
+body{
+
+	height: 100%;
+	background-image: linear-gradient(rgba(0,0,0,0.50),rgba(0,0,0,0.50)),url("{{url_for('static', filename='images/reg2.jpg')}}");
+	background-size: cover;
+	background-repeat: no-repeat;
+	overflow-y: scroll;
+	background-attachment: fixed;
+}
+
 	.narv{
 		background: white;
 		width: 80vw;
-		height: 100vh;
+		height: 100%;
 		border-radius: 5px;
 		margin-top: 5vh;
 		margin-left: 10vw;
+		opacity: 0.8;
 	}
+
+    .kpa{
+    	margin-left: 2%;
+    }
+
 	.narv ul {
 		margin-left: 2.5vw;
 	}
@@ -29,22 +41,27 @@
 	}
 
 	table tr th{
-		border: 1px solid black;
+		border: 0.3px solid black;
 	}
 	table tr td{
-		border: 1px solid black;
+		border: 0.3px solid black;
 	}
 	table{
 		width: 70vw;
 		margin-left: 5vw;
 		margin-top: -1vw;
 	}
-	@media(max-width: 900px){
+@media(max-width: 900px){
+ body{
 
-     body{
-     background: #AED6F1;
-     overflow-y: scroll;
-	}
+	height: 100%;
+	background-image: linear-gradient(rgba(0,0,0,0.50),rgba(0,0,0,0.50)),url("{{url_for('static', filename='images/reg2.jpg')}}");
+	background-size: cover;
+	background-repeat: no-repeat;
+	overflow-y: scroll;
+	background-attachment: fixed;
+}
+
      .narv{
 		background: white;
 		width: 92%;
@@ -56,7 +73,7 @@
 	table{
 		width: 92%;
 		margin-left: 2vw;
-		margin-top: -1vw;
+		margin-top: -2.5vw;
 	}
 	.narv ul {
 		margin-left: 0vw;
@@ -78,7 +95,7 @@
 
 	<header>
 		<nav class="navbar navbar-expand-lg navbar-light bg-light">
-			    <a class="navbar-brand" href="#">KPASEC P.T.A</a>
+			    <a class="navbar-brand kpa" href="#">KPASEC P.T.A</a>
 			    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
 			      <span class="navbar-toggler-icon"></span>
 			    </button>
@@ -87,14 +104,8 @@
 				<div class="collapse navbar-collapse" id="navbarText">
 			      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 			        <li class="nav-item">
-			          <a class="nav-link active " aria-current="page" href="{{url_for('accountant_dashboard')}}" id="dash">Dashboard</a>
-			        </li>
-			        <li class="nav-item d-flex">
-			          <a class="nav-link" href="#" id="lis">Classes</a>
-			        </li>
-			        <li class="nav-item">
-			          <a class="nav-link " href="#" id="new-class">New-Class</a>
-			        </li>
+			          <a class="nav-link active " aria-current="page" href="{{url_for('accountant_dashboard')}}" id="dash">Home</a>
+			        </li>   
 			      </ul>
 
 			      <span class="navbar-text" >
@@ -110,9 +121,9 @@
 	 <div class="narv">
 
 		<div class="income">
-		<h3 style="text-align: center;padding-top: 5vh;padding-bottom: 2vh;">
-		{{category}} Income Statement for {{start}} to {{end}}
-	</h3>
+
+          <h3 style="text-align: center;padding-top: 5vh;padding-bottom: 2vh;">Kpasec {{category}} <br> Income Statement <br> Dated <abbr style="font-family: cursive; color: red;font-size:18px">{{start}}</abbr>   to  <abbr style="font-family: cursive; color: red;font-size:18px">{{end}}</abbr> </h3>
+
 	    </div>
 		<ul>
 			<input type="button" name="excel" value="EXCEL" onclick="exporttoexcell()">
@@ -123,7 +134,7 @@
 				<tr>
 					<th>#.</th>
 					<th>Date</th>
-					<th>Details/Student</th>
+					<th>Details</th>
 					<th>Receipt</th>
 					<th>Analysis</th>
 					<th>Amount</th>
@@ -153,13 +164,13 @@
 					<td style="border: 0px solid transparent;"></td>
 					<td style="border: 0px solid transparent;"></td>
 					<td style="border: 0px solid transparent;"></td>
-					<th class="fw-bold">Total</th>
-					<td style="font-style: oblique; padding-left: 0%;" class="fw-bold">{{cum1[-1] | currencyFormat}}</td>
+					<th>Total</th>
+					<td style="font-style: oblique; padding-left: 0%;">{{cum1[-1] | currencyFormat}}</td>
 					
 				</tr>
 
-			</table><br>
-		</div><br>
+			</table><br><br>
+		</div><br><br>
 		
 
 

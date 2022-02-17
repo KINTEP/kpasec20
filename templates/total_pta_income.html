@@ -9,11 +9,34 @@
 
 </head>
 <style type="text/css">
-	body{
-	
-	background: #AED6F1;
+body{
 
-	}
+	height: 100%;
+	background-image: linear-gradient(rgba(0,0,0,0.50),rgba(0,0,0,0.50)),url("{{url_for('static', filename='images/reg2.jpg')}}");
+	background-size: cover;
+	background-repeat: no-repeat;
+	overflow-y: scroll;
+	background-attachment: fixed;
+}
+
+*{
+	margin-top: 0;
+	padding: 0;
+	
+}
+span {
+	margin-right:0% ;
+	background: transparent;
+	width: 27%;
+}
+span a{
+	margin-right: 4%;
+	padding-left: 5%;
+}
+
+.kpa{
+	margin-left: 2%;
+}
 
  .first ul li{
 		display: inline;
@@ -35,10 +58,10 @@ table{
 
 }	
 table tr th{
-	border: 1px solid black;
+	border: 0.3px solid black;
 }
 table tr td{
-	border: 1px solid black;
+	border: 0.3px solid black;
 }	
 
  table .buut{
@@ -88,9 +111,10 @@ table tr td{
 }	
 .ttable{
 	width: 60vw;
-	height: 60vh;
+	height: 100%;
 	background: white;
 	border-radius: 5px;
+	opacity: 0.8;
 }
 .ttable .act{
 	width: 20%;
@@ -113,15 +137,7 @@ table tr td{
 }
 
 
-.tttable .sub{
-	height: 5vh;
-	width: 13vw;
-	margin-top: 2vh;
-	background: #2E4053;
-	color: yellow;
-	border-radius: 5px;
-	margin-left: 13vw;
-}
+
 .fff input{
 	width: 28vw;
 	height: 6vh;
@@ -146,7 +162,7 @@ table tr td{
 
 .ttable{
 	width: 75vw;
-	height: 60vh;
+	height: 100%;
 	background: white;
 }
 .tabb{
@@ -193,7 +209,7 @@ table tr td{
 
 <header>
 		<nav class="navbar navbar-expand-lg navbar-light bg-light">
-			    <a class="navbar-brand" href="#">KPASEC P.T.A</a>
+			    <a class="navbar-brand kpa" href="#">KPASEC P.T.A</a>
 			    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
 			      <span class="navbar-toggler-icon"></span>
 			    </button>
@@ -202,18 +218,12 @@ table tr td{
 				<div class="collapse navbar-collapse" id="navbarText">
 			      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 			        <li class="nav-item">
-			          <a class="nav-link active " aria-current="page" href="{{url_for('accountant_dashboard')}}" id="dash">Dashboard</a>
-			        </li>
-			        <li class="nav-item d-flex">
-			          <a class="nav-link" href="#" id="lis">Classes</a>
-			        </li>
-			        <li class="nav-item">
-			          <a class="nav-link " href="#" id="new-class">New-Class</a>
+			          <a class="nav-link active " aria-current="page" href="{{url_for('accountant_dashboard')}}" id="dash">Home</a>
 			        </li>
 			      </ul>
 
 			      <span class="navbar-text" >
-			      	<a href="{{url_for('account')}}" class="nn">{{current_user.username}}</a>
+			      	<a style="text-decoration:none;" href="{{url_for('account')}}" class="nn">{{current_user.username}}</a>
 			      	<a href="{{url_for('logout')}}">Logout</a>
 			      </span>
 			 
@@ -227,7 +237,7 @@ table tr td{
    <center>
     <div class="nul"></div>
    	<div class="ttable" id="cont1">
-   		<h3 class="topp" style="padding-top:4vh">Total P.T.A Income </h3>
+   		<h3 class="topp" style="padding-top:4vh;font-family: sans-serif;">Total P.T.A Income </h3>
    		<table >
    			<tr>
    				<th class="non">No.</th>
@@ -247,8 +257,8 @@ table tr td{
    			</tr>
    			   {% endif %}
    			{% endfor %}
-   		</table>
-   	</div>
+   		</table><br><br><br>
+   	</div><br>
 </center>
 
 

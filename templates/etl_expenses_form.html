@@ -8,11 +8,29 @@
 	<title>Student Ledger</title>
 </head>
 <style type="text/css">
-	body{
-	
-	background: #AED6F1;
+body{
 
-	}
+	height: 100%;
+	background-image: linear-gradient(rgba(0,0,0,0.50),rgba(0,0,0,0.50)),url("{{url_for('static', filename='images/reg2.jpg')}}");
+	background-size: cover;
+	background-repeat: no-repeat;
+	overflow-y: scroll;
+	background-attachment: fixed;
+}
+
+
+span {
+	margin-right:0% ;
+	background: transparent;
+	width: 27%;
+}
+span a{
+	margin-right: 4%;
+	padding-left: 5%;
+}
+.kpa{
+	margin-left: 2%;
+}
 
  .first ul li{
 		display: inline;
@@ -29,18 +47,19 @@
 	}
 	.tttable{
 		background: white;
-		height: 82vh;
+		height: 100%;
 		width: 40%;
 		border-radius: 5px;
 		font-family: monospace;
 		margin-top: 2%;
-		opacity: 0.8;
+		opacity: 0.7;
 		display: block;
 		margin-left: 30vw;
+		margin-bottom: 2%;
 }
 
 .tttable .sub{
-	height: 5vh;
+	height: 2.2em;
 	width: 13vw;
 	margin-top: 2vh;
 	background: #2E4053;
@@ -50,7 +69,7 @@
 }
 .fff input{
 	width: 28vw;
-	height: 6vh;
+	height: 2.3em;
 	margin-bottom: 0vh;
 	margin-left: 6vw;
 }
@@ -63,18 +82,19 @@
  
  .tttable{
 		background: white;
-		height: 82vh;
+		height: 100%;
 		width: 70%;
 		border-radius: 5px;
 		font-family: monospace;
 		margin-top: 2%;
-		opacity: 0.8;
+		opacity: 0.7;
 		display: block;
 		margin-left: 15vw;
+		margin-bottom: 2%;
 }
 
 .tttable .sub{
-	height: 5vh;
+	height: 2.2em;
 	width: 20vw;
 	margin-top: 2vh;
 	background: #2E4053;
@@ -84,7 +104,7 @@
 }
 .fff input{
 	width: 58vw;
-	height: 6vh;
+	height: 2.3em;
 	margin-bottom: 0vh;
 	margin-left: 6vw;
 }
@@ -100,7 +120,7 @@
 
 <header>
 		<nav class="navbar navbar-expand-lg navbar-light bg-light">
-			    <a class="navbar-brand" href="#">KPASEC P.T.A</a>
+			    <a class="navbar-brand kpa" href="#">KPASEC P.T.A</a>
 			    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
 			      <span class="navbar-toggler-icon"></span>
 			    </button>
@@ -109,18 +129,13 @@
 				<div class="collapse navbar-collapse" id="navbarText">
 			      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 			        <li class="nav-item">
-			          <a class="nav-link active " aria-current="page" href="{{url_for('accountant_dashboard')}}" id="dash">Dashboard</a>
+			          <a class="nav-link active " aria-current="page" href="{{url_for('accountant_dashboard')}}" id="dash">Home</a>
 			        </li>
-			        <li class="nav-item d-flex">
-			          <a class="nav-link" href="#" id="lis">Classes</a>
-			        </li>
-			        <li class="nav-item">
-			          <a class="nav-link " href="#" id="new-class">New-Class</a>
-			        </li>
+			      
 			      </ul>
 
 			      <span class="navbar-text" >
-			      	<a href="{{url_for('account')}}" class="nn">{{current_user.username}}</a>
+			      	<a style="text-decoration:none" href="{{url_for('account')}}" class="nn">{{current_user.username}}</a>
 			      	<a href="{{url_for('logout')}}">Logout</a>
 			      </span>
 			 
@@ -130,10 +145,10 @@
 	</header>
 
 	   	<div class="tttable" id="cont2">
-   		<h3 class="topp" style="padding-top:4vh; text-align: center; ">{{title}} </h3>
+   		<h3 class="topp" style="padding-top:4vh; text-align: center; font-family:sans-serif; ">{{title}} </h3>
    		<form method="POST" action="" id="student_data" class="fff">
 			{{form.hidden_tag()}}
-			<label style="color:green">Purchase Date</label>
+			<label style="color:green">Purchase Date</label><br>
 			{{form.purchase_date()}}<br>
 			<label style="text-align:flex-start;color: #2471A3;">Item</label><br>
 			{{form.item(class='cls', placeholder='marker')}}<br>
@@ -152,7 +167,7 @@
 			{{form.totalcost(class='cls', placeholder='100.00')}}
 			<br>
 			{{form.submit(class='sub')}}<br>
-		</form>
+		</form><br>
    	</div>
 
 </body>

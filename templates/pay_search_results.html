@@ -10,6 +10,10 @@
 
 </head>
 <style type="text/css">
+
+
+
+
 body{
 
 	height: 100%;
@@ -24,6 +28,16 @@ body{
 	margin-top: 0;
 	padding: 0;
 	
+}
+
+span {
+	margin-right:0% ;
+	background: transparent;
+	width: 27%;
+}
+span a{
+	margin-right: 4%;
+	padding-left: 5%;
 }
 
 	.kpa{
@@ -47,6 +61,26 @@ body{
 
 	}
 
+	.spa{
+		padding: 5px 30px;
+		background-color: #eee;
+		border-radius: 5px;
+		user-select: none;
+		transform: 0.5s;
+		color: #000;
+	}
+	.spa:hover{
+		background-color: #ccc;
+
+	}
+	input[ type="radio"]:checked + .spa{
+		background-color: #2874A6;
+		color: #fff;
+	}
+	.pet{
+		display: none;
+	}
+
 
 	.class2{
 		height: 100%;
@@ -55,13 +89,14 @@ body{
 		background: white;
 		margin-left: 25%;
 		opacity: 0.8;
+		margin-bottom: 2%;
 	}
 
 	  .class2 .rec{
 		background:#34495E ;
 		width: 18%;
-		margin-left: 42%;
-		color: gold;
+		margin-left: 0%;
+		color: white;
 		border-radius: 5px;
 		margin-top: 2%;
 		margin-bottom: 5%;
@@ -72,47 +107,42 @@ body{
 		height: 2vh;
 		background: black;
 	}
-	.class2 .cate1{
-		margin-left: 29%;
-		width: 15%;
-	}
-	.class2 .cate2{
-        width: 15%;
-        margin-left: 1%;
-	}
-	.class2 .cate3{
-		width: 15%;
-		margin-left: 1%;
-	}
+
 
 	.pta{
-		margin-left: 27%;
+		margin-left: 0%;
 	}
 	.etl{
-		margin-left: 27%;
-	}
-	.bot{
-		margin-left: 27%;
+		margin-left: 0%;
 	}
 
+
 	.class2 .caten{
-		width: 66%;
+		width: 50%;
 		height: 2.1em;
 		border-radius: 5px;
 		border: 0.3px solid black;
-		margin-left: 2%;
+		margin-left: 0%;
 		padding-left: 2%;
 	}
-	.class2 select{
-		width: 66%;
+
+	.pr{
+		margin-top: 3%;
+	}
+
+
+	.ssem select{
+		width: 50%;
 		height: 2.1em;
 		border-radius: 5px;
 		border: 0.3px solid black;
-		margin-left: 2%;
+		margin-left: 0%;
 		padding-left: 2%;
 		margin-bottom: 2%;
+
 	}
 	.class2 .action{
+		margin-top: 3%;
 		margin-bottom: 3%;
 	}
 
@@ -178,6 +208,7 @@ body{
    
 
 	 @media  (max-width:900px){
+
 	     .class2{
 		height: 100%;
 		width: 85vw;
@@ -197,8 +228,7 @@ body{
 	.class2 .rec{
 		background:#34495E ;
 		width: 27%;
-		margin-left: 38%;
-		color: gold;
+		color: white;
 		border-radius: 5px;
 		margin-top: 2%;
 		margin-bottom: 5%;
@@ -229,7 +259,7 @@ body{
 			       
 			      </ul>
 
-			      <span class="navbar-text" >
+			      <span class="navbar-text " >
 			      	<a href="{{url_for('account')}}" class="nn">{{current_user.username}}</a>
 			      	<a href="{{url_for('logout')}}">Logout</a>
 			      </span>
@@ -237,7 +267,6 @@ body{
 			    </div>
 			</nav>
 	</header>
-
 
   
    <div class="waa">
@@ -248,7 +277,7 @@ body{
 
    	<div class="class2">
    		<form method="POST" enctype="multipart/form-data">
- 			{{token}}
+ 
   
    			<h4 style="margin-left: 38%;padding-top: 3%;">Student-Bio</h4>
    		<center>
@@ -278,32 +307,56 @@ body{
    		   	
    		   </div>
    		   <div class="">
-   		   	<h4 style="margin-left:32%;padding-top: 3%;">Payment Requirements</h4>
+   		   	<center><h4 class="pr">Payment Requirements</h4></center>
 
-   		   	<div class="action">	   		
-   		   	<input type="button" name="" value="P.T.A" class="cate1" id="pta"><input type="button" name="" value="E.T.L"class="cate2" id="etl"><br>
-   		   	</div>
 
-   		   	<div id="pta1" class="pta">
+               <center>
+                 <div class="action">	   		
+   		   	
+   		   	 <label onchange="show()">
+   			   <input type="radio"  name="button"  checked class="pet">
+   			  <span class="spa">P.T.A</span>
+   		      </label>
+
+   		       <label onchange="show2()">
+   			   <input type="radio"  name="button"  class="pet">
+   			   <span class="spa">E.T.L</span>
+   		       </label>       
+
+   		   	 </div>
+               </center>
+   		   	
+
+   		   	
+
+                <center>
+
+               <div class="ssem">
    		   		<select name="semester">
    		   			<option>SEM1</option>
    		   			<option>SEM2</option>
    		   		</select><br>
+   		   	</div> 	
+
+   		   	<div id="pta1" class="pta">
    		   		
    		   		<input type="text" name="pta" placeholder="Enter P.T.A Amount" class="caten">
    		   	</div>
 
-   		   	<div id="etl1" class="etl">
-   		   		<select name="semester">
-   		   			<option>SEM1</option>
-   		   			<option>SEM2</option>
-   		   		</select><br>
+   		   	<div id="etl1" class="etl">		
    		   	
    		   		<input type="text" name="etl" placeholder="Enter E.T.L Amount" class="caten">
    		   	</div>
+
+
    		   	<input type="submit" name="Receive" class="rec" value="Receive">
+
+   		   	</center>
+   		   	
+
        
    		</div>
+          
        
    		</form><br>
    			
@@ -314,31 +367,18 @@ body{
    </div>
 
    <script src="../js/jquery-3.6.0.min.js"></script>
-   <script >
-      $("#etl").click(function () {
-       $("#pta1").css("display", "none");
-       $("#etl1").css("display","block");
-       $("#both1").css("display","none");
-    
-       
-      });
 
-       $("#pta").click(function () {
-       $("#pta1").css("display", "block");
-       $("#etl1").css("display","none");
-       $("#both1").css("display","none");
-    
-       
-      });
 
-       $("#both").click(function () {
-       $("#pta1").css("display", "none");
-       $("#etl1").css("display","none");
-       $("#both1").css("display","block");
-    
-       
-      });
- </script>
+        <script type="text/javascript">
+            function show(str){
+                document.getElementById('etl1').style.display = 'none';
+                document.getElementById('pta1').style.display = 'block';
+            }
+            function show2(sign){
+                document.getElementById('etl1').style.display = 'block';
+                document.getElementById('pta1').style.display = 'none';
+            }
+        </script>
 
 
 </body>

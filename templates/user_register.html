@@ -31,13 +31,22 @@ body{
 		height: 100%;
 		border-radius: 5px;
 		margin-left: 30%;
-		margin-top: 8vh;
+		margin-top: 5vh;
 		opacity: 0.7;
+		margin-bottom: 3%;
 	}
 	.loginn label{
 		margin-left: 15%;
 	}
 	.loginn input{
+		margin-left: 15%;
+		width: 70%;
+		height: 2.3em;
+		border-radius: 5px;
+		border: 0.3px solid grey;
+	}
+
+	.loginn select{
 		margin-left: 15%;
 		width: 70%;
 		height: 2.3em;
@@ -109,13 +118,20 @@ body{
 		height: 100%;
 		border-radius: 5px;
 		margin-left: 9.5%;
-		margin-top: 14vh;
+		margin-top: 6vh;
+		margin-bottom: 3%;
 	}	
       
     .loginn label{
 		margin-left: 5%;
 	}
 	.loginn input{
+		margin-left: 5%;
+		width: 90%;
+		height: 2.3em;
+	}
+
+	.loginn select{
 		margin-left: 5%;
 		width: 90%;
 		height: 2.3em;
@@ -160,9 +176,9 @@ body{
 			{{render_field(form.confirm_password)}}
 			{{form.confirm_password(style="padding-left:2%;",)}}
 			<br>
-			<label>Confirm Password</label><br>
+			<label>Staff Role</label><br>
 			{{render_field(form.function)}}
-			{{form.function(style="padding-left:2%;",)}}
+			{{form.function()}}
 			<br>
 			{{form.submit(class='clk')}}
 		</form>

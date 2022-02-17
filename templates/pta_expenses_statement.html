@@ -10,53 +10,81 @@
 </head>
 <style type="text/css">
 	body{
-     background: #AED6F1;
-     overflow-y: scroll;
-	}
+
+	height: 100%;
+	background-image: linear-gradient(rgba(0,0,0,0.50),rgba(0,0,0,0.50)),url("{{url_for('static', filename='images/reg2.jpg')}}");
+	background-size: cover;
+	background-repeat: no-repeat;
+	overflow-y: scroll;
+	background-attachment: fixed;
+}
+
+span {
+	margin-right:0% ;
+	background: transparent;
+	width: 27%;
+}
+span a{
+	margin-right: 4%;
+	padding-left: 5%;
+}
+
+.kpa{
+	margin-left: 2%;
+}
 	.narv{
 		background: white;
-		width: 80vw;
-		height: 100vh;
+		width: 70vw;
+		height: 100%;
 		border-radius: 5px;
 		margin-top: 5vh;
-		margin-left: 10vw;
+		margin-left: 16%;
+		opacity: 0.7;
+		margin-bottom: 2%;
 	}
 	.narv ul {
-		margin-left: 2.5vw;
+		margin-left: 3.4%;
 	}
 	.narv ul input{
 		width: 6vw;
 	}
 
 	table tr th{
-		border: 1px solid black;
+		border: 0.3px solid black;
 	}
 	table tr td{
-		border: 1px solid black;
+		border: 0.3px solid black;
 	}
 	table{
-		width: 70vw;
-		margin-left: 5vw;
+		width: 60vw;
+		margin-left: 7%;
 		margin-top: -1vw;
 	}
 	@media(max-width: 900px){
 
      body{
-     background: #AED6F1;
-     overflow-y: scroll;
-	}
+
+	height: 100%;
+	background-image: linear-gradient(rgba(0,0,0,0.50),rgba(0,0,0,0.50)),url("{{url_for('static', filename='images/reg2.jpg')}}");
+	background-size: cover;
+	background-repeat: no-repeat;
+	overflow-y: scroll;
+	background-attachment: fixed;
+}
      .narv{
 		background: white;
-		width: 92%;
+		width: 98%;
 		height: 100%;
 		border-radius: 5px;
 		margin-top: 5vh;
-		margin-left: 4vw;
+		margin-left: 1vw;
+		opacity: 0.7;
+		margin-bottom: 2%;
 	}
 	table{
-		width: 92%;
-		margin-left: 2vw;
-		margin-top: -1vw;
+		width: 96%;
+		margin-top: -2.7vw;
+		margin-left: 2%;
 	}
 	.narv ul {
 		margin-left: 0vw;
@@ -77,7 +105,7 @@
 
 	<header>
 		<nav class="navbar navbar-expand-lg navbar-light bg-light">
-			    <a class="navbar-brand" href="#">KPASEC P.T.A</a>
+			    <a class="navbar-brand kpa" href="#">KPASEC P.T.A</a>
 			    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
 			      <span class="navbar-toggler-icon"></span>
 			    </button>
@@ -86,18 +114,13 @@
 				<div class="collapse navbar-collapse" id="navbarText">
 			      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 			        <li class="nav-item">
-			          <a class="nav-link active " aria-current="page" href="{{url_for('accountant_dashboard')}}" id="dash">Dashboard</a>
+			          <a class="nav-link active " aria-current="page" href="{{url_for('accountant_dashboard')}}" id="dash">Home</a>
 			        </li>
-			        <li class="nav-item d-flex">
-			          <a class="nav-link" href="#" id="lis">Classes</a>
-			        </li>
-			        <li class="nav-item">
-			          <a class="nav-link " href="#" id="new-class">New-Class</a>
-			        </li>
+			  
 			      </ul>
 
 			      <span class="navbar-text" >
-			      	<a href="{{url_for('account')}}" class="nn">{{current_user.username}}</a>
+			      	<a style="text-decoration:none;" href="{{url_for('account')}}" class="nn">{{current_user.username}}</a>
 			      	<a href="{{url_for('logout')}}">Logout</a>
 			      </span>
 			 
@@ -109,8 +132,8 @@
 	 <div class="narv">
 
 		<div class="income">
-		<h3 style="text-align: center;padding-top: 5vh;padding-bottom: 2vh;">
-		Expenses Statement for {{start}} to {{end}}
+		<h3 style="text-align: center;padding-top: 5vh;padding-bottom: 2vh;font-family: sans-serif; ">P.T.A
+		Expenses <br>  Dated <abbr style="font-family:cursive;color: red; font-size: 24px"> {{start}}</abbr> to <abbr style="color:red;font-size:24px; font-family: cursive;"> {{end}}</abbr>
 	</h3>
 	    </div>
 		<ul>

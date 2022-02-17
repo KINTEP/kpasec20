@@ -24,6 +24,15 @@ body{
        padding: 0;
        
 }
+span {
+       margin-right:0% ;
+       background: transparent;
+       width: 27%;
+}
+span a{
+       margin-right: 4%;
+       padding-left: 5%;
+}
 
 .kpa{
        margin-left: 2%;
@@ -106,6 +115,7 @@ table tr td{
 	background: white;
 	border-radius: 5px;
        opacity: 0.8;
+       margin-bottom: 2%;
 }
 .ttable .act{
 	width: 20%;
@@ -221,6 +231,7 @@ table tr td{
 	height: 100%;
 	background: white;
        opacity: 0.8;
+       margin-bottom: 2%;
 }
 
 .tabb thead tr th{
@@ -297,7 +308,7 @@ table .buut{
 			      </ul>
 
 			      <span class="navbar-text" >
-			      	<a href="{{url_for('account')}}" class="nn">{{current_user.username}}</a>
+			      	<a style="text-decoration:none;" href="{{url_for('account')}}" class="nn">{{current_user.username}}</a>
 			      	<a href="{{url_for('logout')}}">Logout</a>
 			      </span>
 			 
@@ -311,7 +322,7 @@ table .buut{
    <center>
     <div class="nul"></div>
    	<div class="ttable" id="cont1">
-   		<h3 class="topp" style="padding-top:4vh">General Expenses </h3>
+   		<h3 class="topp" style="padding-top:4vh;font-family: sans-serif;">General Expenses </h3>
    		<table >
    			<tr>
    				<th class="non">No.</th>
