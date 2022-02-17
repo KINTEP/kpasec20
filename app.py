@@ -784,10 +784,10 @@ class UserSignUpForm(FlaskForm):
     function = SelectField("Role", choices = ['','Accountant', 'Clerk'], validators=[DataRequired()])
     submit = SubmitField("Register")
 
-    def validate_email(self, email):
-    	user = User.query.filter_by(email=email.data).first()
-    	if user:
-    		raise ValueError("The email is already in use, please choose a different one")
+    #def validate_email(self, email):
+    #	user = User.query.filter_by(email=email.data).first()
+    #	if user:
+    #		raise ValueError("The email is already in use, please choose a different one")
 
 
 class UserLogInForm(FlaskForm):
