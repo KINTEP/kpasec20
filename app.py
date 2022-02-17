@@ -73,7 +73,7 @@ def load_user(user_id):
 
 @app.route("/")
 def home():
-    return 1/0#render_template("homepage1.html")
+    return render_template("homepage1.html")
 
 
 @app.route("/register_user", methods = ['GET', 'POST'])
