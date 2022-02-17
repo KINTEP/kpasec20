@@ -1,0 +1,31 @@
+Exception on /accountant_dashboard/cash_book_report1 [GET]
+Traceback (most recent call last):
+  File "C:\Users\user\Desktop\Weba1\venv\lib\site-packages\flask\app.py", line 2073, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\user\Desktop\Weba1\venv\lib\site-packages\flask\app.py", line 1518, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\user\Desktop\Weba1\venv\lib\site-packages\flask\app.py", line 1516, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\user\Desktop\Weba1\venv\lib\site-packages\flask\app.py", line 1502, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "C:\Users\user\Desktop\Weba1\venv\lib\site-packages\flask_login\utils.py", line 272, in decorated_view
+    return func(*args, **kwargs)
+  File "C:\Users\user\Desktop\Weba1\app.py", line 378, in cash_book_report1
+    return render_template("cash_book11.html", balance=balance,
+  File "C:\Users\user\Desktop\Weba1\venv\lib\site-packages\flask\templating.py", line 147, in render_template
+    return _render(
+  File "C:\Users\user\Desktop\Weba1\venv\lib\site-packages\flask\templating.py", line 128, in _render
+    rv = template.render(context)
+  File "C:\Users\user\Desktop\Weba1\venv\lib\site-packages\jinja2\environment.py", line 1291, in render
+    self.environment.handle_exception()
+  File "C:\Users\user\Desktop\Weba1\venv\lib\site-packages\jinja2\environment.py", line 925, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "C:\Users\user\Desktop\Weba1\templates\cash_book11.html", line 2, in top-level template code
+    {% extends "bootstrap.html" %}
+  File "C:\Users\user\Desktop\Weba1\templates\bootstrap.html", line 34, in top-level template code
+    {% block content%}
+  File "C:\Users\user\Desktop\Weba1\templates\cash_book11.html", line 158, in block 'content'
+    <td>{{date[loop.index-1]}}</td>
+  File "C:\Users\user\Desktop\Weba1\venv\lib\site-packages\jinja2\environment.py", line 455, in getitem
+    return obj[argument]
+jinja2.exceptions.UndefinedError: 'date' is undefined

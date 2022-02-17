@@ -1,3 +1,93 @@
+@app.route("/accountant_dashboard/cash_book_report/<string:start1>, <string:end1>, <category>")
+@login_required
+def cash_book_report(start1, end1, category):
+	if current_user.is_authenticated  and current_user.approval:
+		start, end = date_transform(start1,end1)
+		category = decrypt_text(encrypted_text=category)
+		if category == "PTA Levy":
+			cash_book = PTACashBook.query.filter(PTACashBook.date.between(start, end)).all()
+			income = [i.amount for i in cash_book if i.category == "revenue"]
+			expense = [i.amount for i in cash_book if i.category == "payment"]
+			balance, bf, bfdate = bal_date(cash_book, book=PTACashBook)
+		if category == "ETL":
+			cash_book = ETLCashBook.query.filter(ETLCashBook.date.between(start, end)).all()
+			income = [i.amount for i in cash_book if i.category == "revenue"]
+			expense = [i.amount for i in cash_book if i.category == "payment"]
+			balance, bf, bfdate = bal_date(cash_book, book=ETLCashBook)
+		if category == "ETL & PTA Levy":
+			cash_book = CashBook.query.filter(CashBook.date.between(start, end)).all()
+			income = [i.amount for i in cash_book if i.category == "revenue"]
+			expense = [i.amount for i in cash_book if i.category == "payment"]
+			balance, bf, bfdate = bal_date(cash_book, book=CashBook)
+		print(start1, end1)
+		return render_template("cash_book.html", cash_book=cash_book, balance=balance, 
+			debit=sum(income), credit = sum(expense), bal1 = sum(income)-sum(expense), 
+			category=category, start=start, end=end1, bf=bf, bfdate=bfdate)
+	else:
+		abort(404)
+
+
+
+
+
+class ETLCashBook(db.Model):
+	__bind_key__ = "kpasec"
+	id = db.Column(db.Integer, primary_key=True)
+	date = db.Column(db.DateTime, default = datetime.utcnow())
+	details = db.Column(db.String(120), default = "ETL Income")
+	amount = db.Column(db.Integer)
+	category = db.Column(db.String(100))
+	semester = db.Column(db.String(100))
+	balance = db.Column(db.Integer)
+	expense_id = db.Column(db.Integer)
+	income_id = db.Column(db.Integer)
+
+	def __repr__(self):
+		return f'User: {self.details}'
+
+class PTACashBook(db.Model):
+	__bind_key__ = "kpasec"
+	id = db.Column(db.Integer, primary_key=True)
+	date = db.Column(db.DateTime, default = datetime.utcnow())
+	details = db.Column(db.String(120), default = "PTA Income")
+	amount = db.Column(db.Integer)
+	category = db.Column(db.String(100))
+	semester = db.Column(db.String(100))
+	balance = db.Column(db.Integer)
+	expense_id = db.Column(db.Integer)
+	income_id = db.Column(db.Integer)
+
+	def __repr__(self):
+		return f'User: {self.details}'
+
+
+class CashBook(db.Model):
+	__bind_key__ = "kpasec"
+	id = db.Column(db.Integer, primary_key=True)
+	date = db.Column(db.DateTime, default = datetime.utcnow())
+	details = db.Column(db.String(120), default = "Student payments")
+	etl = db.Column(db.Integer)
+	pta = db.Column(db.Integer)
+	amount = db.Column(db.Integer, nullable=False)
+	category = db.Column(db.String(100), nullable = False)
+	semester = db.Column(db.String(100), nullable = False)
+	balance = db.Column(db.Integer, nullable=False)
+	expense_id = db.Column(db.Integer)
+	income_id = db.Column(db.Integer)
+
+	def __repr__(self):
+		return f'User: {self.details}'
+
+class Client(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DateTime, default = datetime.utcnow())
+    company_name = db.Column(db.String(80), unique=False, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(120), nullable=False)
+
+    def __repr__(self):
+        return f'User: {self.company_name}'
+
 @app.route("/register_client", methods = ['GET', 'POST'])
 def register_client():
 	if current_user.is_authenticated:

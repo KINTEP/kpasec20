@@ -7,7 +7,7 @@ from datetime import datetime
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, current_user, logout_user, login_required
 import requests
-from numpy import cumsum, array
+from numpy import cumsum, array, random
 import uuid
 import datetime as dt
 from sqlalchemy.sql import extract
@@ -26,6 +26,7 @@ import os
 from helpers import generate_student_id, generate_receipt_no, promote_student, date_transform, inside, encrypt_text, decrypt_text
 from forms import (ClientSignUpForm, ClientLogInForm, ToDoForm, StudentPaymentsForm, ExpensesForm, PTAExpensesForm, ETLExpensesForm, ReportsForm, ChargeForm, SearchForm, StudentLedgerForm)
 from logging import FileHandler, WARNING
+from sqlalchemy import create_engine
 
 
 
@@ -42,7 +43,7 @@ app.config['SECRET_KEY'] = 'ghd76878tbingfggcee5dr'#os.environ.get('KPASEC_APP')
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
-
+local = 'sqlite:///client.db'
 filehandler = FileHandler('errorlog.txt')
 filehandler.setLevel(WARNING)
 
@@ -136,23 +137,14 @@ def pta_expenses():
 			quantity = form.data.get('quantity')
 			unitcost = form.data.get('unitcost')
 			semester = current_sem
-			exp1 = Expenses(date = purchase_date, item=item, purchase_date=purchase_date, purpose=purpose, quantity=quantity,
+			exp1 = Expenses(expensor=current_user.username,date = purchase_date, item=item, purchase_date=purchase_date, purpose=purpose, quantity=quantity,
 				unitcost=unitcost, totalcost=totalcost, semester=semester)
-			pta1 = PTAExpenses(item=item, purchase_date=purchase_date, purpose=purpose, quantity=quantity, unitcost=unitcost, 
+			pta1 = PTAExpenses(expensor=current_user.username,item=item, purchase_date=purchase_date, purpose=purpose, quantity=quantity, unitcost=unitcost, 
 				totalcost=totalcost, semester=semester)
-			balance = int(obtain_cash_book_balances(CashBook))
-			balance1 = int(obtain_cash_book_balances(PTACashBook))
+			
 			db.session.add(exp1)
 			db.session.add(pta1)
-			db.session.commit()
-			idx1 = Expenses.query.all()[-1].id
-			idx2 = PTAExpenses.query.all()[-1].id
-			cash = CashBook(date=purchase_date,amount=totalcost, category="payment", semester=semester, 
-				balance=str(balance), expense_id=idx1, details = item)
-			ptacash = PTACashBook(details='PTA Expense', amount=totalcost, category="payment", semester=semester, 
-				balance = balance1, expense_id=idx2)
-			db.session.add(cash)
-			db.session.add(ptacash)
+			
 			db.session.commit()
 			flash("Data successfully saved", "success")
 			return redirect(url_for("gen_expenses"))
@@ -176,29 +168,17 @@ def etl_expenses():
 			unitcost = form.data.get('unitcost')
 			
 			semester = current_sem
+			#balance1 = int(obtain_cash_book_balances(ETLCashBook))
 
-			
-			balance = int(obtain_cash_book_balances(CashBook))
-			balance1 = int(obtain_cash_book_balances(ETLCashBook))
-
-			exp1 = Expenses(date = purchase_date, item=item, purchase_date=purchase_date, purpose=purpose, quantity=quantity,
+			exp1 = Expenses(expensor=current_user.username,date = purchase_date, item=item, purchase_date=purchase_date, purpose=purpose, quantity=quantity,
 				unitcost=unitcost, totalcost=totalcost, semester=semester)
-			etl1 = ETLExpenses(item=item, purchase_date=purchase_date, purpose=purpose, quantity=quantity, unitcost=unitcost, 
+			etl1 = ETLExpenses(expensor=current_user.username,item=item, purchase_date=purchase_date, purpose=purpose, quantity=quantity, unitcost=unitcost, 
 				totalcost=totalcost, semester=semester)
 			db.session.add(exp1)
 			db.session.add(etl1)
 			db.session.commit()
-			idx1 = Expenses.query.all()[-1].id
-			idx2 = ETLExpenses.query.all()[-1].id
-			cash = CashBook(date=purchase_date,amount=totalcost, category="payment", semester=semester, 
-				balance=str(balance), expense_id=idx1+1, details = item)
-			etlcash = ETLCashBook(details='ETL Expense',date=purchase_date,amount=totalcost, category="payment", semester=semester, 
-				balance = balance1, expense_id=idx2+1)
 			
-			
-			db.session.add(cash)
-			db.session.add(etlcash)
-			db.session.commit()
+
 			flash("Data successfully saved", "success")
 			return redirect(url_for("gen_expenses"))
 		return render_template("etl_expenses_form.html", form=form, title=title)
@@ -238,7 +218,7 @@ def charges():
 			end = form.data.get('end_date')
 			sem = form.data.get('semester')
 			total = etl + pta
-			charge = Charges(begin_date=begin, end_date=end, etl=etl, pta=pta,
+			charge = Charges(account=current_user.username,begin_date=begin, end_date=end, etl=etl, pta=pta,
 			 total=total, semester=sem)
 			
 			db.session.add(charge)
@@ -264,7 +244,7 @@ def clerk_dashboard():
 			phone = form2.data.get("parent_contact")
 			phone1 = form2.data.get("phone")
 			idx = generate_student_id(phone, dob)
-			stud = Student(date=date_ad,fullname=name, phone=phone1, date_of_birth=dob, class1=class1.class1, parent_contact=phone, id_number=idx, date_admitted=date_ad)
+			stud = Student(clerk=current_user.username,date=date_ad,fullname=name, phone=phone1, date_of_birth=dob, class1=class1.class1, parent_contact=phone, id_number=idx, date_admitted=date_ad)
 			db.session.add(stud)
 			db.session.commit()
 			flash(f"{name} successfully registered!", "success")
@@ -311,33 +291,106 @@ def all_students():
 	else:
 		abort(404)
 
-@app.route("/accountant_dashboard/cash_book_report/<string:start1>, <string:end1>, <category>")
+
+def prepare_etlptacash_book(mode='pta'):
+    con = sqlite3.connect("kpasec.db")
+    if mode == 'etl':
+    	etl_exp = pd.read_sql_query("SELECT date, item, totalcost from etl_expenses", con)
+    	etl_inc = pd.read_sql_query("SELECT date, amount, category from etl_income WHERE category=='revenue'", con)
+    if mode == 'pta':
+    	etl_exp = pd.read_sql_query("SELECT date, item, totalcost from pta_expenses", con)
+    	etl_inc = pd.read_sql_query("SELECT date, amount, category from pta_income WHERE category=='revenue'", con)
+    etl_exp.rename(columns={'totalcost':'amount'}, inplace = True)
+    etl_exp['amount'] = -1*etl_exp['amount']
+    etl_exp['category'] = 'payment'
+    etl_inc['item'] = 'etl payments'
+    comb1 = pd.merge(etl_inc, etl_exp, how = 'outer')
+    df2 = comb1.sort_values('date', ignore_index=True)
+    df2['balance'] = df2['amount'].cumsum()
+    df2['bf'] = df2['balance'].shift(1)
+    df2['bf'] = df2['bf'].fillna(0)
+    return df2
+
+
+def query_cash_book(start, end, df):
+    new1 = df[(df['date'] >= start) & (df['date'] <= end)]
+    return new1
+
+
+@app.route("/accountant_dashboard/cash_book_report1/<start>,<end>, <cat>")
 @login_required
-def cash_book_report(start1, end1, category):
-	if current_user.is_authenticated  and current_user.approval:
-		start, end = date_transform(start1,end1)
-		category = decrypt_text(encrypted_text=category)
-		if category == "PTA Levy":
-			cash_book = PTACashBook.query.filter(PTACashBook.date.between(start, end)).all()
-			income = [i.amount for i in cash_book if i.category == "revenue"]
-			expense = [i.amount for i in cash_book if i.category == "payment"]
-			balance, bf, bfdate = bal_date(cash_book, book=PTACashBook)
-		if category == "ETL":
-			cash_book = ETLCashBook.query.filter(ETLCashBook.date.between(start, end)).all()
-			income = [i.amount for i in cash_book if i.category == "revenue"]
-			expense = [i.amount for i in cash_book if i.category == "payment"]
-			balance, bf, bfdate = bal_date(cash_book, book=ETLCashBook)
-		if category == "ETL & PTA Levy":
-			cash_book = CashBook.query.filter(CashBook.date.between(start, end)).all()
-			income = [i.amount for i in cash_book if i.category == "revenue"]
-			expense = [i.amount for i in cash_book if i.category == "payment"]
-			balance, bf, bfdate = bal_date(cash_book, book=CashBook)
-		
-		return render_template("cash_book.html", cash_book=cash_book, balance=balance, 
-			debit=sum(income), credit = sum(expense), bal1 = sum(income)-sum(expense), 
-			category=category, start=start, end=end1, bf=bf, bfdate=bfdate)
-	else:
-		abort(404)
+def cash_book_report1(start, end, cat):
+	start1, end1 = date_transform(start,end)
+	if cat == 'ETL':
+		cbk = query_cash_book(str(start1), str(end1), df=prepare_etlptacash_book(mode='etl'))
+	if cat == 'PTA Levy':
+		cbk = query_cash_book(str(start1), str(end1), df=prepare_etlptacash_book(mode='pta'))
+	if cat == 'ETL & PTA Levy':
+		return redirect(url_for('combined_cash_bk', start=start,end=end, cat=cat))
+	balance = list(cbk['balance'])
+	date = [dat[:10] for dat in cbk['date']]
+	details = list(cbk['item'])
+	amount = list(cbk['amount'])
+	category = list(cbk['category'])
+	debit = sum([i for i in amount if i >= 0])
+	credit = sum([i for i in amount if i < 0])
+	bf = list(cbk['bf'])[0]
+	bfdate = date[0]
+	bal1 = abs(debit)-abs(credit)
+	return render_template("cash_book11.html", balance=balance, date=date, details=details, amount=amount,
+			debit=debit, credit=credit, bal1=bal1, 
+			category1=cat, category=category,start=start, end=end, bf=bf, bfdate=bfdate)
+
+
+@app.route("/accountant_dashboard/combined_cash_bk/<start>,<end>,<cat>")
+@login_required
+def combined_cash_bk(start, end, cat):
+	start1, end1 = date_transform(start,end)
+	cbk = query_cash_book(str(start1), str(end1), df = combined_cash_book())
+	balance = list(cbk['balance'])
+	date = [dat[:10] for dat in cbk['date']]
+	details = list(cbk['item'])
+	amount = list(cbk['amount'])
+	category = list(cbk['main_cat'])
+	debit = abs(sum([i for i in amount if i >= 0]))
+	credit = sum([i for i in amount if i < 0])
+	bf = list(cbk['bf'])[0]
+	bfdate = date[0]
+	bal1 = abs(debit) - abs(credit)
+	return render_template("cash_book11.html", balance=balance, date=date, details=details, amount=amount,
+			debit=debit, credit=credit, bal1 = bal1, 
+			category1=cat, category=category,start=start, end=end, bf=bf, bfdate=bfdate)
+
+def combined_cash_book():
+    con = sqlite3.connect("kpasec.db")
+    etl_exp = pd.read_sql_query("SELECT date, item, totalcost from etl_expenses", con)
+    pta_exp = pd.read_sql_query("SELECT date, item, totalcost from pta_expenses", con)
+    etl_exp['category'] = 'etl_exp'
+    etl_exp['main_cat'] = 'payment'
+    pta_exp['category'] = 'pta_exp'
+    pta_exp['main_cat'] = 'payment'
+    comb1 = pd.merge(etl_exp, pta_exp, how = 'outer')
+    etl_inc = pd.read_sql_query("SELECT date, amount, category from etl_income WHERE category=='revenue'", con)
+    pta_inc = pd.read_sql_query("SELECT date, amount, category from pta_income WHERE category=='revenue'", con)
+    etl_inc.rename(columns={'category':'main_cat'}, inplace = True)
+    pta_inc.rename(columns={'category':'main_cat'}, inplace = True)
+    pta_inc['category'] = 'pta_inc'
+    etl_inc['category'] = 'etl_inc'
+    pta_inc['item'] = 'pta income'
+    etl_inc['item'] = 'etl income'
+    comb2 = pd.merge(etl_inc, pta_inc, how = 'outer')
+    comb1.rename(columns={'totalcost':'amount'}, inplace = True)
+    comb1['amount'] = -1*comb1['amount']
+    cash = pd.merge(comb1, comb2, how = 'outer')
+    df2 = cash.sort_values('date', ignore_index=True)
+    df2['balance'] = df2['amount'].cumsum()
+    df2['bf'] = df2['balance'].shift(1)
+    df2['bf'] = df2['bf'].fillna(0)
+    return df2
+
+
+
+
 
 def bal_date(cash_book, book):
 	if len(cash_book) >= 1:
@@ -455,11 +508,11 @@ def begin_sem():
 			end = form.data.get('end_date')
 			sem = form.data.get('semester')
 			total = etl + pta
-			charge = Charges(begin_date=begin, end_date=end, etl=etl, pta=pta,
+			charge = Charges(account=current_user.username, begin_date=begin, end_date=end, etl=etl, pta=pta,
 			 total=total, semester=sem)
-			etl_data = ETLIncome(date = begin, amount=etl, tx_id=None, semester=sem, mode_of_payment=None, student_id=None, category='charge')
-			pta_data = PTAIncome(date = begin, amount=pta, tx_id=None, semester=sem, mode_of_payment=None, student_id=None, category='charge')
-			pmt = StudentPayments(date = begin, etl_amount=etl, pta_amount=pta, amount=total, category="charge", semester=sem)
+			etl_data = ETLIncome(clerk=current_user.username, amount=etl, tx_id=None, semester=sem, mode_of_payment=None, student_id=None, category='charge')
+			pta_data = PTAIncome(clerk=current_user.username, amount=pta, tx_id=None, semester=sem, mode_of_payment=None, student_id=None, category='charge')
+			pmt = StudentPayments(etl_amount=etl, pta_amount=pta, amount=total, category="charge", semester=sem)
 			db.session.add(charge)
 			db.session.add(pmt)
 			db.session.add(etl_data)
@@ -488,8 +541,10 @@ def accountant_dashboard():
 			start = form2.data.get("start")
 			end = form2.data.get("end")
 			if report == "Cash Book":
-				category = encrypt_text(plain_text=filter_by)
-				return redirect(url_for('cash_book_report', start1=start, end1=end, category=category))
+				category = filter_by
+				#category = encrypt_text(plain_text=filter_by)
+				return redirect(url_for('cash_book_report1', start=start, end=end, cat = category))
+				#return redirect(url_for('cash_book_report', start1=start, end1=end, category=category))
 			if report == "Income Statement":
 				return redirect(url_for('income_statement', start1=start, end1=end, category=filter_by))
 			if report == "Expenditure Statement":
@@ -518,7 +573,7 @@ def student_classes():
 	if current_user.is_authenticated and current_user.approval:
 		newclass = NewClassForm()
 		if newclass.validate_on_submit():
-			cls1 = Classes(class1=newclass.data.get('newclass'))
+			cls1 = Classes(account=current_user.username,class1=newclass.data.get('newclass'))
 			db.session.add(cls1)
 			db.session.commit()
 			flash(f"Class {newclass.data.get('newclass')} added class lists", "success")
@@ -563,60 +618,48 @@ def pay_search_result(name, dob, phone, idx, class1):
 			mode = 'cash'
 
 			tx_id = generate_receipt_no()
-			balance = int(obtain_cash_book_balances(CashBook))
-			balance1 = int(obtain_cash_book_balances(ETLCashBook))
-			balance2 = int(obtain_cash_book_balances(PTACashBook))
+			
+			#balance1 = int(obtain_cash_book_balances(ETLCashBook))
+			#balance2 = int(obtain_cash_book_balances(PTACashBook))
 
 			if etl and not pta:
 				amount = int(etl)
 				pta = 0
 				pmt_data = StudentPayments(etl_amount=etl, pta_amount=0, semester=semester, mode_of_payment=mode, student_id=idx, amount=amount, tx_id=tx_id)
-				etl_data = ETLIncome(amount=etl, tx_id=tx_id, semester=semester, mode_of_payment=mode, student_id=idx)
+				etl_data = ETLIncome(clerk=current_user.username,amount=etl, tx_id=tx_id, semester=semester, mode_of_payment=mode, student_id=idx)
 				id2 = ETLIncome.query.all()[-1].id
 				id1 = StudentPayments.query.all()[-1].id
-				etlcash = ETLCashBook(amount=etl, category="revenue", semester=semester, balance = balance1, income_id=id2+1)
-				cash = CashBook(etl=etl, pta=0, category='revenue', semester=semester, balance=balance, income_id=id1+1, amount=amount)
+				#etlcash = ETLCashBook(amount=etl, category="revenue", semester=semester, balance = balance1, income_id=id2+1)
+				
 				db.session.add(etl_data)
 				db.session.add(pmt_data)
-				db.session.add(cash)
-				db.session.add(etlcash)
+				
 
 			if pta and not etl:
 				amount = int(pta)
 				etl = 0
 				pmt_data = StudentPayments(etl_amount=0, pta_amount=pta, semester=semester, mode_of_payment=mode, student_id=idx, amount=amount, tx_id=tx_id)
-				pta_data = PTAIncome(amount=pta, tx_id=tx_id, semester=semester, mode_of_payment=mode, student_id=idx)
+				pta_data = PTAIncome(clerk=current_user.username,amount=pta, tx_id=tx_id, semester=semester, mode_of_payment=mode, student_id=idx)
 				id1 = StudentPayments.query.all()[-1].id
 				id2 = PTAIncome.query.all()[-1].id
-				ptacash = PTACashBook(amount=pta, category="revenue", semester=semester, balance = balance2, income_id=id2+1)
-				cash = CashBook(etl=0, pta=pta, category='revenue', semester=semester, balance=balance, income_id=id1+1, amount=amount)	
+				#ptacash = PTACashBook(amount=pta, category="revenue", semester=semester, balance = balance2, income_id=id2+1)
+				
 				db.session.add(pta_data)
 				db.session.add(pmt_data)
-				db.session.add(cash)
-				db.session.add(ptacash)
+				
 
 			if pta and etl:
 				amount = int(pta) + int(etl)
 				pmt_data = StudentPayments(etl_amount=etl, pta_amount=pta, semester=semester, mode_of_payment=mode, student_id=idx, amount=amount, tx_id=tx_id)
-				pta_data = PTAIncome(amount=pta, tx_id=tx_id, semester=semester, mode_of_payment=mode, student_id=idx)
-				etl_data = ETLIncome(amount=etl, tx_id=tx_id, semester=semester, mode_of_payment=mode, student_id=idx)
-				if len(StudentPayments.query.all()) > 0:
-					id1 = StudentPayments.query.all()[-1].id
-					id2 = PTAIncome.query.all()[-1].id
-					id3 = ETLIncome.query.all()[-1].id
-				else:
-					id1 = 0
-					id2 = 0
-					id3 = 0
-				ptacash = PTACashBook(amount=pta, category="revenue", semester=semester, balance = balance2, income_id=id2+1)
-				etlcash = ETLCashBook(amount=etl, category="revenue", semester=semester, balance = balance1, income_id=id3+1)
-				cash = CashBook(etl=etl, pta=pta, category='revenue', semester=semester, balance=balance, income_id=id1+1, amount=amount)	
+				pta_data = PTAIncome(clerk=current_user.username, amount=pta, tx_id=tx_id, semester=semester, mode_of_payment=mode, student_id=idx)
+				etl_data = ETLIncome(clerk=current_user.username, amount=etl, tx_id=tx_id, semester=semester, mode_of_payment=mode, student_id=idx)
+				#ptacash = PTACashBook(amount=pta, category="revenue", semester=semester, balance = balance2, income_id=id2+1)
+				#etlcash = ETLCashBook(amount=etl, category="revenue", semester=semester, balance = balance1, income_id=id3+1)
+				
 				db.session.add(pta_data)
 				db.session.add(etl_data)
 				db.session.add(pmt_data)
-				db.session.add(cash)
-				db.session.add(ptacash)
-				db.session.add(etlcash)
+
 
 			student = Student.query.get_or_404(idx)
 			name = student.fullname
@@ -748,6 +791,7 @@ class Classes(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	date = db.Column(db.DateTime, default = datetime.utcnow())
 	class1 = db.Column(db.String(10), unique=False, nullable=False)
+	account = db.Column(db.String(120), nullable=False)
 
 	def __repr__(self):
 		return f'User: {self.class1}'
@@ -788,7 +832,7 @@ class UserSignUpForm(FlaskForm):
     def validate_email(self, email):
     	user = User.query.filter_by(email=email.data).first()
     	if user:
-    		raise ValueError("The email is already in use, please choose a different one")
+    		raise ValidationError("The email is already in use, please choose a different one")
 
 
 class UserLogInForm(FlaskForm):
@@ -818,16 +862,6 @@ class NewClassForm(FlaskForm):
 
 
 #DATABASES
-class Client(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.DateTime, default = datetime.utcnow())
-    company_name = db.Column(db.String(80), unique=False, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(120), nullable=False)
-
-    def __repr__(self):
-        return f'User: {self.company_name}'
-
 
 
 class User(db.Model, UserMixin):
@@ -852,6 +886,7 @@ class Student(db.Model):
 	__bind_key__ = "kpasec"
 	id = db.Column(db.Integer, primary_key=True)
 	date = db.Column(db.DateTime, default = datetime.utcnow())
+	clerk = db.Column(db.String(120),nullable=False)
 	date_admitted = db.Column(db.DateTime)
 	fullname = db.Column(db.String(80), unique=False, nullable=False)
 	date_of_birth = db.Column(db.String(10), unique=True)
@@ -872,6 +907,7 @@ class PTAIncome(db.Model):
 	__bind_key__ = "kpasec"
 	id = db.Column(db.Integer, primary_key=True)
 	date = db.Column(db.DateTime, default = datetime.utcnow())
+	clerk = db.Column(db.String(120), nullable=False)
 	amount = db.Column(db.Integer)
 	tx_id = db.Column(db.String(16))
 	semester = db.Column(db.String(10))
@@ -887,6 +923,7 @@ class ETLIncome(db.Model):
 	__bind_key__ = "kpasec"
 	id = db.Column(db.Integer, primary_key=True)
 	date = db.Column(db.DateTime, default = datetime.utcnow())
+	clerk = db.Column(db.String(120),nullable=False)
 	amount = db.Column(db.Integer)
 	tx_id = db.Column(db.String(16))
 	semester = db.Column(db.String(10), nullable = False)
@@ -918,6 +955,7 @@ class Expenses(db.Model):
 	__bind_key__ = "kpasec"
 	id = db.Column(db.Integer, primary_key=True)
 	date = db.Column(db.DateTime, default = datetime.utcnow())
+	expensor = db.Column(db.String(120), nullable=False)
 	item = db.Column(db.String(120))
 	purchase_date = db.Column(db.DateTime)
 	purpose = db.Column(db.String(120))
@@ -935,6 +973,7 @@ class PTAExpenses(db.Model):
 	__bind_key__ = "kpasec"
 	id = db.Column(db.Integer, primary_key=True)
 	date = db.Column(db.DateTime, default = datetime.utcnow())
+	expensor = db.Column(db.String(120), nullable=False)
 	item = db.Column(db.String(120))
 	purchase_date = db.Column(db.DateTime)
 	purpose = db.Column(db.String(120))
@@ -951,6 +990,7 @@ class ETLExpenses(db.Model):
 	__bind_key__ = "kpasec"
 	id = db.Column(db.Integer, primary_key=True)
 	date = db.Column(db.DateTime, default = datetime.utcnow())
+	expensor = db.Column(db.String(120), nullable=False)
 	item = db.Column(db.String(120))
 	purchase_date = db.Column(db.DateTime)
 	purpose = db.Column(db.String(120))
@@ -963,60 +1003,12 @@ class ETLExpenses(db.Model):
 		return f'User: {self.item}'
 
 
-class CashBook(db.Model):
-	__bind_key__ = "kpasec"
-	id = db.Column(db.Integer, primary_key=True)
-	date = db.Column(db.DateTime, default = datetime.utcnow())
-	details = db.Column(db.String(120), default = "Student payments")
-	etl = db.Column(db.Integer)
-	pta = db.Column(db.Integer)
-	amount = db.Column(db.Integer, nullable=False)
-	category = db.Column(db.String(100), nullable = False)
-	semester = db.Column(db.String(100), nullable = False)
-	balance = db.Column(db.Integer, nullable=False)
-	expense_id = db.Column(db.Integer)
-	income_id = db.Column(db.Integer)
-
-	def __repr__(self):
-		return f'User: {self.details}'
-
-
-class ETLCashBook(db.Model):
-	__bind_key__ = "kpasec"
-	id = db.Column(db.Integer, primary_key=True)
-	date = db.Column(db.DateTime, default = datetime.utcnow())
-	details = db.Column(db.String(120), default = "ETL Income")
-	amount = db.Column(db.Integer)
-	category = db.Column(db.String(100))
-	semester = db.Column(db.String(100))
-	balance = db.Column(db.Integer)
-	expense_id = db.Column(db.Integer)
-	income_id = db.Column(db.Integer)
-
-	def __repr__(self):
-		return f'User: {self.details}'
-
-class PTACashBook(db.Model):
-	__bind_key__ = "kpasec"
-	id = db.Column(db.Integer, primary_key=True)
-	date = db.Column(db.DateTime, default = datetime.utcnow())
-	details = db.Column(db.String(120), default = "PTA Income")
-	amount = db.Column(db.Integer)
-	category = db.Column(db.String(100))
-	semester = db.Column(db.String(100))
-	balance = db.Column(db.Integer)
-	expense_id = db.Column(db.Integer)
-	income_id = db.Column(db.Integer)
-
-	def __repr__(self):
-		return f'User: {self.details}'
-
-
 class Charges(db.Model):
 	__bind_key__ = "kpasec"
 	id = db.Column(db.Integer, primary_key=True)
 	begin_date = db.Column(db.DateTime)
 	end_date = db.Column(db.DateTime)
+	account = db.Column(db.String(120), nullable=False)
 	etl = db.Column(db.Integer, unique=False, nullable=False)
 	pta = db.Column(db.Integer, unique=False, nullable=False)
 	total = db.Column(db.Integer, unique=False, nullable=False)
@@ -1034,96 +1026,24 @@ current_sem = 'SEM1'#Charges.query.all()[-1].semester
 
 
 #Archives
-
-class ArchivesStudentPayments(db.Model):
-	__tablename__ = "archivesstudentpayments"
-	__bind_key__ = "kpasecarchives"
-	id = db.Column(db.Integer, primary_key=True)
-	date = db.Column(db.DateTime, default = datetime.utcnow())
-	etl_amount = db.Column(db.Integer)
-	pta_amount = db.Column(db.Integer)
-	amount = db.Column(db.Integer)
-	tx_id = db.Column(db.String(16))
-	semester = db.Column(db.String(10), nullable = False)
-	mode_of_payment = db.Column(db.String(20))
-	category = db.Column(db.String(20), default="revenue")
-	student_id = db.Column(db.String(10), db.ForeignKey('archivestudent.id'))#Here we reference the table name
-
-	def __repr__(self):
-		return f'User: {self.student_id}'
-
-
-class ArchivesETLIncome(db.Model):
-	__tablename__ = "archivesetlincome"
-	__bind_key__ = "kpasecarchives"
-	id = db.Column(db.Integer, primary_key=True)
-	date = db.Column(db.DateTime, default = datetime.utcnow())
-	amount = db.Column(db.Integer)
-	tx_id = db.Column(db.String(16))
-	semester = db.Column(db.String(10), nullable = False)
-	mode_of_payment = db.Column(db.String(20))
-	category = db.Column(db.String(20), default="revenue")
-	student_id = db.Column(db.String(10), db.ForeignKey('archivestudent.id'))#Here we reference the table name
-
-	def __repr__(self):
-		return f'User: {self.student_id}'
-
-
-class ArchivesPTAIncome(db.Model):
-	__tablename__ = "archivesptaincome"
-	__bind_key__ = "kpasecarchives"
-	id = db.Column(db.Integer, primary_key=True)
-	date = db.Column(db.DateTime, default = datetime.utcnow())
-	amount = db.Column(db.Integer)
-	tx_id = db.Column(db.String(16))
-	semester = db.Column(db.String(10))
-	mode_of_payment = db.Column(db.String(20))
-	category = db.Column(db.String(20), default="revenue")
-	student_id = db.Column(db.String(10), db.ForeignKey('archivestudent.id'))#Here we reference the table name
-
-	def __repr__(self):
-		return f'User: {self.student_id}'
-
-
-
-class ArchivesStudent(db.Model):
-	__tablename__ = "archivestudent"
-	__bind_key__ = "kpasecarchives"
-	id = db.Column(db.Integer, primary_key=True)
-	date = db.Column(db.DateTime, default = datetime.utcnow())
-	date_admitted = db.Column(db.DateTime)
-	fullname = db.Column(db.String(80), unique=False, nullable=False)
-	date_of_birth = db.Column(db.String(10), unique=True)
-	class1 = db.Column(db.String(10), unique=False, nullable=False)
-	parent_contact = db.Column(db.String(120), nullable=False)
-	phone = db.Column(db.String(12))
-	id_number = db.Column(db.String(120), unique=True, nullable=False)
-	status = db.Column(db.Boolean, default=True)
-	pta = db.relationship('ArchivesPTAIncome', backref='pta_payer', lazy=True)#Here we reference the class
-	etl = db.relationship('ArchivesETLIncome', backref='etl_payer', lazy=True)
-	payer = db.relationship('ArchivesStudentPayments', backref='payer', lazy=True)
-
+def create_student_ledger(tablename, dbname, df2):
+    engine = create_engine('sqlite:///', echo=False)
+    engine = create_engine(f'sqlite:///Archives/StudentLedgers/{dbname}.db', echo=False)
+    sqlite_connection = engine.connect()
+    sqlite_table = tablename
+    df2.to_sql(sqlite_table, sqlite_connection, if_exists='fail')
 
 
 def move_to_archives(std_id):
 	std = Student.get_or_404(std_id)
-	arch = ArchivesStudent(id=std.id, phone=std.phone, date=std.date, fullname=std.fullname, date_of_birth=std.date_of_birth,
-		class1=student.class1, parent_contact=std.parent_contact, id_number=std.id_number, status=False)
-	
+	dob = std.date_of_birth
+	phone = std.parent_contact
+	hash1 = sha256(str(std_id).encode()).hexdigest()
 
-	pmt = StudentPayments.query.filter_by(student_id=stud_id_id).first()
 	etl = PTAIncome.query.filter_by(student_id=stud_id_id).first()
 	pta = ETLIncome.query.filter_by(student_id=stud_id_id).first()
+	#create_student_ledger(tablename='allpayments', dbname=hash1, df2)
 
-	ptarch = ArchivesPTAIncome(amount=pta.amount, tx_id=pta.tx_id, semester=pta.semester, mode_of_payment=pat.mode_of_payment, category=pta.category, student_id=pta.student_id)
-	etlarch = ArchivesETLIncome(amount=etl.amount, tx_id=etl.tx_id, semester=etl.semester, mode_of_payment=etl.mode_of_payment, category=etl.category, student_id=etl.student_id)
-	pamtach = ArchivesStudentPayments(etl_amount=pmt.etl_amount, pta_amount=pmt.pta_amount, amount=pmt.amount, tx_id=pmt.tx_id, semester=pmt.semester, mode_of_payment=pmt.mode_of_payment,
-	 category=pmt.category, student_id=pmt.student_id)
-
-	db.session.add(arch)
-	db.session.add(ptarch)
-	db.session.add(etlarch)
-	db.session.add(pamtach)
 	db.delete(std)
 	db.delete(pmt)
 	db.delete(etl)
@@ -1157,11 +1077,10 @@ admin.add_view(MyModelView(User, db.session))
 admin.add_view(MyModelView(Student, db.session))
 admin.add_view(MyModelView(StudentPayments, db.session))
 admin.add_view(MyModelView(Expenses, db.session))
-admin.add_view(MyModelView(CashBook, db.session))
 admin.add_view(MyModelView(PTAIncome, db.session))
 
 if __name__ == '__main__':
-	app.run()
+	app.run(debug= True)
 
 
 
