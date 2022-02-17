@@ -30,9 +30,10 @@ from logging import FileHandler, WARNING
 
 
 #db_url =  "postgres://ncvzgxfhqksvxj:031bfc49b611636694193e8fb7ab6fb92ef44edf4490ef604bec977a56075bff@ec2-54-158-26-89.compute-1.amazonaws.com:5432/ddo3qjkq45niev"
-db_url =  "postgres://ezffanfmtiwixw:de187f5a9db402e1a04dd724c333c47b3f8de2252c475f4e2a505a6d40591478@ec2-3-217-219-146.compute-1.amazonaws.com:5432/ddsrcsftn519t3"
+db_url = "postgres://ezffanfmtiwixw:de187f5a9db402e1a04dd724c333c47b3f8de2252c475f4e2a505a6d40591478@ec2-3-217-219-146.compute-1.amazonaws.com:5432/ddsrcsftn519t3"
+#db_url =  "postgres://ezffanfmtiwixw:de187f5a9db402e1a04dd724c333c47b3f8de2252c475f4e2a505a6d40591478@ec2-3-217-219-146.compute-1.amazonaws.com:5432/ddsrcsftn519t3"
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = db_url
+app.config['DATABASE_URL'] = db_url
 app.config['SQLALCHEMY_BINDS'] = {"kpasec": "sqlite:///kpasec.db", "kpasecarchives":"sqlite:///kpasecarchives.db"}
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -784,10 +785,10 @@ class UserSignUpForm(FlaskForm):
     function = SelectField("Role", choices = ['','Accountant', 'Clerk'], validators=[DataRequired()])
     submit = SubmitField("Register")
 
-    #def validate_email(self, email):
-    #	user = User.query.filter_by(email=email.data).first()
-    #	if user:
-    #		raise ValueError("The email is already in use, please choose a different one")
+    def validate_email(self, email):
+    	user = User.query.filter_by(email=email.data).first()
+    	if user:
+    		raise ValueError("The email is already in use, please choose a different one")
 
 
 class UserLogInForm(FlaskForm):
