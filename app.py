@@ -37,7 +37,7 @@ app.config['SQLALCHEMY_BINDS'] = {"kpasec": "sqlite:///kpasec.db", "kpasecarchiv
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-app.config['SECRET_KEY'] = os.environ.get('KPASEC_APP')
+app.config['SECRET_KEY'] = 'ghd76878tbingfggcee5dr'#os.environ.get('KPASEC_APP')
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
