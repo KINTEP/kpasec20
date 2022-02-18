@@ -1106,7 +1106,7 @@ def drop_db():
 @click.command(name='create_tables')
 @with_appcontext
 def create_tables():
-	User.__table__.create(db.engine)
+	#User.__table__.create(db.engine)
 	Student.__table__.create(db.engine)
 	PTAIncome.__table__.create(db.engine)
 	ETLIncome.__table__.create(db.engine)
