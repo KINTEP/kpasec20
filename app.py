@@ -1108,7 +1108,7 @@ def drop_db():
 def create_tables():
 	#User.__table__.create(db.engine)
 	#Student.__table__.create(db.engine)
-	PTAIncome.__table__.create(db.engine)
+	#PTAIncome.__table__.create(db.engine)
 	ETLIncome.__table__.create(db.engine)
 	PTAExpenses.__table__.create(db.engine)
 	ETLExpenses.__table__.create(db.engine)
