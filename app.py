@@ -30,7 +30,7 @@ from sqlalchemy import create_engine
 import click
 from flask.cli import with_appcontext
 import re
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 
 
 
@@ -46,7 +46,7 @@ db_url = "postgres://ezffanfmtiwixw:de187f5a9db402e1a04dd724c333c47b3f8de2252c47
 #HEROKU_POSTGRESQL_IVORY_URL
 app = Flask(__name__)
 
-load_dotenv()
+#load_dotenv()
 
 app.config['SQLALCHEMY_DATABASE_URI'] = uri #db_url
 app.config['SQLALCHEMY_BINDS'] = {"kpasec": "sqlite:///kpasec.db", "kpasecarchives":"sqlite:///kpasecarchives.db"}
