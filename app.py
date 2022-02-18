@@ -1121,7 +1121,6 @@ def create_tables():
 def delete_tables():
 	#User.__table__.drop(db.engine)
 	#User.__table__.drop(db.engine)
-	Student.__table__.drop(db.engine)
 	PTAIncome.__table__.drop(db.engine)
 	ETLIncome.__table__.drop(db.engine)
 	PTAExpenses.__table__.drop(db.engine)
@@ -1129,6 +1128,8 @@ def delete_tables():
 	Expenses.__table__.drop(db.engine)
 	StudentPayments.__table__.drop(db.engine)
 	Charges.__table__.drop(db.engine)
+	Student.__table__.drop(db.engine)
+	
 
 
 app.cli.add_command(create_db)
