@@ -1079,6 +1079,10 @@ admin.add_view(MyModelView(StudentPayments, db.session))
 admin.add_view(MyModelView(Expenses, db.session))
 admin.add_view(MyModelView(PTAIncome, db.session))
 
+def create_tables():
+	db.drop_all()
+	db.create_all()
+
 if __name__ == '__main__':
 	app.run()
 
