@@ -1101,7 +1101,7 @@ def create_db():
 @click.command(name='drop_db')
 @with_appcontext
 def drop_db():
-	db.create_all()
+	db.drop_all()
 
 @click.command(name='create_tables')
 @with_appcontext
