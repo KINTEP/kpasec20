@@ -1083,7 +1083,7 @@ admin.add_view(MyModelView(PTAIncome, db.session))
 @click.command(name='create_tables')
 @with_appcontext
 def create_tables():
-	#db.drop_all()
+	db.drop_all()
 	db.create_all()
 
 app.cli.add_command(create_tables)
