@@ -1099,7 +1099,13 @@ def create_tables():
 	db.drop_all()
 	db.create_all()
 
+@click.command(name='create_user')
+@with_appcontext
+def create_user():
+	User.__table__.create(db.engine)
+
 app.cli.add_command(create_tables)
+app.cli.add_command(create_user)
 
 with app.app_context():
     db.create_all()
