@@ -1119,8 +1119,8 @@ def create_tables():
 @click.command(name='delete_tables')
 @with_appcontext
 def delete_tables():
-	User.__table__.drop(db.engine)
-	User.__table__.drop(db.engine)
+	#User.__table__.drop(db.engine)
+	#User.__table__.drop(db.engine)
 	Student.__table__.drop(db.engine)
 	PTAIncome.__table__.drop(db.engine)
 	ETLIncome.__table__.drop(db.engine)
