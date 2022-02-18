@@ -927,7 +927,7 @@ class PTAIncome(db.Model):
 	semester = db.Column(db.String(10))
 	mode_of_payment = db.Column(db.String(20))
 	category = db.Column(db.String(20), default="revenue")
-	student_id = db.Column(db.String(10), db.ForeignKey('student.id'))#Here we reference the table name
+	student_id = db.Column(db.Integer, db.ForeignKey('student.id'))#Here we reference the table name
 
 	def __repr__(self):
 		return f'User: {self.student_id}'
@@ -943,7 +943,7 @@ class ETLIncome(db.Model):
 	semester = db.Column(db.String(10), nullable = False)
 	mode_of_payment = db.Column(db.String(20))
 	category = db.Column(db.String(20), default="revenue")
-	student_id = db.Column(db.String(10), db.ForeignKey('student.id'))#Here we reference the table name
+	student_id = db.Column(db.Integer, db.ForeignKey('student.id'))#Here we reference the table name
 
 	def __repr__(self):
 		return f'User: {self.student_id}'
@@ -960,7 +960,7 @@ class StudentPayments(db.Model):
 	semester = db.Column(db.String(10), nullable = False)
 	mode_of_payment = db.Column(db.String(20))
 	category = db.Column(db.String(20), default="revenue")
-	student_id = db.Column(db.String(10), db.ForeignKey('student.id'))#Here we reference the table name
+	student_id = db.Column(db.Integer, db.ForeignKey('student.id'))#Here we reference the table name
 
 	def __repr__(self):
 		return f'User: {self.student_id}'
@@ -1107,7 +1107,7 @@ def drop_db():
 @with_appcontext
 def create_tables():
 	#User.__table__.create(db.engine)
-	Student.__table__.create(db.engine)
+	#Student.__table__.create(db.engine)
 	PTAIncome.__table__.create(db.engine)
 	ETLIncome.__table__.create(db.engine)
 	PTAExpenses.__table__.create(db.engine)
