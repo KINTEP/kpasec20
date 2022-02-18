@@ -48,7 +48,7 @@ app = Flask(__name__)
 
 #load_dotenv()
 
-app.config['SQLALCHEMY_DATABASE_URI'] = db_url #db_url
+app.config['SQLALCHEMY_DATABASE_URI'] = uri #db_url
 app.config['SQLALCHEMY_BINDS'] = {"kpasec": "sqlite:///kpasec.db", "kpasecarchives":"sqlite:///kpasecarchives.db"}
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
