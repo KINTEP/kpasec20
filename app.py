@@ -1119,11 +1119,10 @@ def create_tables():
 
 
 
+app.cli.add_command(create_db)
+app.cli.add_command(drop_db)
 app.cli.add_command(create_tables)
-app.cli.add_command(create_user)
 
-with app.app_context():
-    db.create_all()
 
 if __name__ == '__main__':
 	app.run()
