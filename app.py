@@ -1093,16 +1093,31 @@ admin.add_view(MyModelView(StudentPayments, db.session))
 admin.add_view(MyModelView(Expenses, db.session))
 admin.add_view(MyModelView(PTAIncome, db.session))
 
+@click.command(name='create_db')
+@with_appcontext
+def create_db():
+	db.create_all()
+
+@click.command(name='drop_db')
+@with_appcontext
+def drop_db():
+	db.create_all()
+
 @click.command(name='create_tables')
 @with_appcontext
 def create_tables():
-	db.drop_all()
-	db.create_all()
-
-@click.command(name='create_user')
-@with_appcontext
-def create_user():
 	User.__table__.create(db.engine)
+	Student.__table__.create(db.engine)
+	PTAIncome.__table__.create(db.engine)
+	ETLIncome.__table__.create(db.engine)
+	PTAExpenses.__table__.create(db.engine)
+	ETLExpenses.__table__.create(db.engine)
+	Expenses.__table__.create(db.engine)
+	StudentPayments.__table__.create(db.engine)
+	Charges.__table__.create(db.engine)
+
+
+
 
 app.cli.add_command(create_tables)
 app.cli.add_command(create_user)
