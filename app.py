@@ -27,7 +27,8 @@ from helpers import generate_student_id, generate_receipt_no, promote_student, d
 from forms import (ClientSignUpForm, ClientLogInForm, ToDoForm, StudentPaymentsForm, ExpensesForm, PTAExpensesForm, ETLExpensesForm, ReportsForm, ChargeForm, SearchForm, StudentLedgerForm)
 from logging import FileHandler, WARNING
 from sqlalchemy import create_engine
-
+import click
+from flask.cli import with_appcontext
 
 
 #db_url =  "postgres://ncvzgxfhqksvxj:031bfc49b611636694193e8fb7ab6fb92ef44edf4490ef604bec977a56075bff@ec2-54-158-26-89.compute-1.amazonaws.com:5432/ddo3qjkq45niev"
@@ -1079,6 +1080,8 @@ admin.add_view(MyModelView(StudentPayments, db.session))
 admin.add_view(MyModelView(Expenses, db.session))
 admin.add_view(MyModelView(PTAIncome, db.session))
 
+@click.command(name='create_tables')
+@with_appcontext
 def create_tables():
 	db.drop_all()
 	db.create_all()
