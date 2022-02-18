@@ -34,12 +34,12 @@ from sqlalchemy import create_engine
 db_url = "postgres://ezffanfmtiwixw:de187f5a9db402e1a04dd724c333c47b3f8de2252c475f4e2a505a6d40591478@ec2-3-217-219-146.compute-1.amazonaws.com:5432/ddsrcsftn519t3"
 #db_url =  "postgres://ezffanfmtiwixw:de187f5a9db402e1a04dd724c333c47b3f8de2252c475f4e2a505a6d40591478@ec2-3-217-219-146.compute-1.amazonaws.com:5432/ddsrcsftn519t3"
 app = Flask(__name__)
-app.config['DATABASE_URL'] = db_url
+app.config['DATABASE_URL'] = os.environ.get("DATABASE_URL")#db_url
 app.config['SQLALCHEMY_BINDS'] = {"kpasec": "sqlite:///kpasec.db", "kpasecarchives":"sqlite:///kpasecarchives.db"}
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-app.config['SECRET_KEY'] = 'ghd76878tbingfggcee5dr'#os.environ.get('KPASEC_APP')
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
@@ -1080,7 +1080,7 @@ admin.add_view(MyModelView(Expenses, db.session))
 admin.add_view(MyModelView(PTAIncome, db.session))
 
 if __name__ == '__main__':
-	app.run(debug= True)
+	app.run()
 
 
 
